@@ -212,3 +212,55 @@ def test_no_lookahead_next_window_has_no_open_fair():
     src = inspect.getsource(fetch_window_open)
     assert "if start_unix > now_ts" in src
     assert "return None" in src
+
+
+# ---------------------------------------------------------------------------
+# settled locks are booked history, not open risk
+# ---------------------------------------------------------------------------
+
+
+def test_settled_locks_do_not_count_as_open_risk(tmp_path: Path):
+    """Inventory was only ever added to. A day of completed locks accumulated
+    into open_cost until capacity = budget - open_cost hit zero and the risk
+    governor silently stopped every sleeve from opening anything.
+    """
+    import json as _json
+    import time as _time
+
+    led = tmp_path / "l.jsonl"
+    old = int(_time.time()) - 86_400          # yesterday's 15m windows
+    new = (int(_time.time()) // 900) * 900    # the window running now
+    led.write_text("\n".join(_json.dumps(r) for r in [
+        {"kind": "pair_complete", "slug": f"btc-updown-15m-{old}",
+         "shares": 100, "ask_up": 0.48, "ask_down": 0.49},
+        {"kind": "pair_complete", "slug": f"eth-updown-15m-{old}",
+         "shares": 100, "ask_up": 0.48, "ask_down": 0.49},
+        {"kind": "pair_complete", "slug": f"sol-updown-15m-{new}",
+         "shares": 100, "ask_up": 0.48, "ask_down": 0.49},
+    ]), encoding="utf-8")
+
+    eng = PolyPaper(PolyCfg(), PolyLedger(led), fade=False)
+    cost = sum(i.up * i.up_cost + i.down * i.down_cost for i in eng.inv.values())
+
+    assert len(eng.inv) == 1, "only the live window should still be inventory"
+    assert abs(cost - 97.0) < 1e-6, "two settled pairs must not carry cost"
+    # dedup still holds, or the desk would re-lock a market it already owns
+    assert f"btc-updown-15m-{old}" in eng.completed
+    assert f"eth-updown-15m-{old}" in eng.completed
+
+
+def test_a_fade_leg_is_not_expired(tmp_path: Path):
+    """A bare fade is directional, not a hedged pair — leave it alone."""
+    import json as _json
+    import time as _time
+
+    led = tmp_path / "l.jsonl"
+    old = int(_time.time()) - 86_400
+    led.write_text(_json.dumps(
+        {"kind": "fade", "slug": f"btc-updown-15m-{old}", "side": "up",
+         "shares": 10, "ask": 0.40}
+    ), encoding="utf-8")
+
+    eng = PolyPaper(PolyCfg(), PolyLedger(led), fade=True)
+    assert len(eng.inv) == 1
+    assert eng.expire() == 0

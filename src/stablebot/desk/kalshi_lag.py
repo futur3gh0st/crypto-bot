@@ -60,6 +60,10 @@ from stablebot.poly.spot_lag import fetch_1m_klines
 
 SEED_BARS = 500
 VISION = "https://data-api.binance.vision"
+
+# Consecutive empty listings before a series is left alone, and for how long.
+DORMANT_AFTER = 3
+DORMANT_SECONDS = 600.0
 BINANCE = "https://api.binance.com"
 
 # Kalshi 15m crypto series that have a Binance spot equivalent to model against.
@@ -287,6 +291,12 @@ class KalshiLagPaper:
         # Kalshi settles on CF Benchmarks, so price against a CF-style composite
         # rather than a single Binance USDT book.
         self.reference = reference or ReferencePrice()
+        # Kalshi lists some 15m crypto series only intermittently. Polling one
+        # that is not listing costs two API calls a cycle, returns nothing, and
+        # buries the real blocker under window_timing hits. Count consecutive
+        # empty listings and stop asking for a while.
+        self._series_miss: dict[str, int] = {}
+        self._series_wake: dict[str, float] = {}
         self.sess = load_session(starting=starting_balance)
         self.vol = VolTracker(halflife=self.params.signal.vol_halflife)
         self.gates = GateCounter()
@@ -462,6 +472,23 @@ class KalshiLagPaper:
             out.append(rec)
         return out
 
+    def series_is_dormant(self, series: str, now_ts: float) -> bool:
+        return now_ts < self._series_wake.get(series, 0.0)
+
+    def _series_listed(self, series: str) -> None:
+        """A market showed up: the series is alive again."""
+        self._series_miss.pop(series, None)
+        self._series_wake.pop(series, None)
+
+    def _series_empty(self, series: str, now_ts: float) -> bool:
+        """No market at all. Returns True once the series has gone dormant."""
+        n = self._series_miss.get(series, 0) + 1
+        self._series_miss[series] = n
+        if n >= DORMANT_AFTER:
+            self._series_wake[series] = now_ts + DORMANT_SECONDS
+            return True
+        return False
+
     async def _maybe_enter(
         self,
         client: KalshiClient,
@@ -519,6 +546,12 @@ class KalshiLagPaper:
         note.z = z
 
         # ---- pick the market ------------------------------------------
+        if self.series_is_dormant(series, now_ts):
+            left = self._series_wake[series] - now_ts
+            note.action = "skip"
+            note.detail = f"{series} not listing — re-probe in {left/60:.0f}m"
+            self.gates.hit("series_dormant", note.detail)
+            return note, None
         try:
             markets = await client.list_open_markets(series)
         except (KalshiNotFound, KalshiRateLimit) as exc:
@@ -531,6 +564,19 @@ class KalshiLagPaper:
             note.detail = f"markets: {type(exc).__name__}: {exc}"
             self.gates.hit("no_quote", note.detail)
             return note, None
+
+        if not markets:
+            # Nothing listed at all, which is different from "listed but not in
+            # the entry band" — only the former means the series is asleep.
+            went_dormant = self._series_empty(series, now_ts)
+            note.action = "skip"
+            note.detail = (
+                f"{series} listed no market"
+                + (f" — dormant for {DORMANT_SECONDS//60}m" if went_dormant else "")
+            )
+            self.gates.hit("series_dormant" if went_dormant else "window_timing", note.detail)
+            return note, None
+        self._series_listed(series)
 
         best: tuple[dict[str, Any], float, float] | None = None
         for m in markets:

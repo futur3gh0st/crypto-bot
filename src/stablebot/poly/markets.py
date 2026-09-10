@@ -47,6 +47,31 @@ def slug_for(coin: str, minutes: int, start_unix: int) -> str:
     return f"{coin.lower()}-updown-{minutes}m-{start_unix}"
 
 
+def slug_window_end(slug: str) -> int | None:
+    """When the market behind a slug stops trading.
+
+    `btc-updown-15m-1788984900` carries the window *start* and its length, so
+    the end is start + length. Used to tell a live position from one that
+    settled hours ago — a settled lock is not open risk, and counting it as
+    such is what silently drove the desk's spare capacity to zero.
+    """
+    parts = slug.rsplit("-", 2)
+    if len(parts) < 3:
+        return None
+    span, start = parts[-2], parts[-1]
+    if not span.endswith("m"):
+        return None
+    try:
+        return int(start) + int(span[:-1]) * 60
+    except (TypeError, ValueError):
+        return None
+
+
+def slug_is_settled(slug: str, now_ts: float) -> bool:
+    end = slug_window_end(slug)
+    return end is not None and now_ts >= end
+
+
 def minutes_left(end_unix: int, now_ts: float) -> float:
     return (end_unix - now_ts) / 60.0
 

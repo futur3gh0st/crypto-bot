@@ -316,6 +316,25 @@ class DeskApp:
             st.note("warn", "halt file present at startup — entries are blocked")
         await self._check_venues()
 
+    # ---- state endpoint --------------------------------------------------
+
+    async def _start_state_server(self, serve: str | None):
+        """Publish DeskState as JSON. Available to the TUI desk too, not just
+        the daemon: watching a desk and querying it are separate needs, and a
+        flag that silently does nothing on the interactive path is a trap.
+        """
+        if not serve:
+            return None
+        from stablebot.desk.server import serve_state
+        from stablebot.desk.wire import state_to_dict
+
+        st = self.state
+        host, _, port = serve.rpartition(":")
+        host = host or "127.0.0.1"
+        server = await serve_state(lambda: state_to_dict(st), host, int(port))
+        st.note("info", f"state endpoint on {host}:{port}/state")
+        return server
+
     # ---- headless daemon -----------------------------------------------
 
     async def run_headless(self, serve: str | None = None) -> DeskState:
@@ -326,19 +345,9 @@ class DeskApp:
         same risk — the screen is replaced by a log on stdout for journald, and
         optionally a JSON snapshot a remote terminal can draw.
         """
-        from stablebot.desk.server import serve_state
-        from stablebot.desk.wire import state_to_dict
-
         st = self.state
         await self._bootstrap()
-
-        server = None
-        if serve:
-            host, _, port = serve.rpartition(":")
-            server = await serve_state(
-                lambda: state_to_dict(st), host or "127.0.0.1", int(port)
-            )
-            st.note("info", f"state endpoint on {host or '127.0.0.1'}:{port}/state")
+        server = await self._start_state_server(serve)
 
         loop = asyncio.get_running_loop()
         for sig in (signal.SIGINT, signal.SIGTERM):
@@ -385,9 +394,10 @@ class DeskApp:
 
     # ---- entry point ---------------------------------------------------
 
-    async def run(self) -> DeskState:
+    async def run(self, serve: str | None = None) -> DeskState:
         st = self.state
         await self._bootstrap()
+        server = await self._start_state_server(serve)
 
         with raw_mode():
             self.keys.start()
@@ -409,6 +419,10 @@ class DeskApp:
                 st.quit = True
             finally:
                 st.quit = True
+                if server is not None:
+                    server.close()
+                    with contextlib.suppress(Exception):
+                        await server.wait_closed()
                 for t in tasks:
                     t.cancel()
                 await asyncio.gather(*tasks, return_exceptions=True)

@@ -245,6 +245,7 @@ GATES = (
     "no_vol",
     "no_signal",
     "window_timing",
+    "series_dormant",
     "already_open",
     "max_concurrent",
     "no_quote",

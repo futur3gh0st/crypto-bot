@@ -503,6 +503,28 @@ fix.
 
 ---
 
+## 6d. Dormant series
+
+Kalshi lists some 15m crypto series only intermittently — `KXADA15M`,
+`KXBCH15M` and `KXTON15M` were all unlisted while `KXBTC15M` and the rest ran
+normally. Polling one that is not listing costs two API calls a cycle, returns
+nothing, and buries the real blocker: `window_timing` was 77% of gate hits with
+most of it coming from three coins that had no market at all.
+
+After `DORMANT_AFTER` (3) consecutive empty listings the engine stops asking for
+`DORMANT_SECONDS` (10 minutes), then re-probes. A single market appearing clears
+the streak.
+
+The distinction that matters: **nothing listed** is `series_dormant`; **listed
+but outside the 90s-840s entry band** stays `window_timing`. The second is
+normal for ~17% of every window and must never put a healthy series to sleep.
+
+Klines are still fetched for a dormant coin, so its sigma stays warm and its
+book row keeps showing fair and z. Only the market and orderbook calls are
+skipped — two of the three.
+
+---
+
 ## 6c. Benching, and getting a sleeve back
 
 The allocator benches a sleeve that is bleeding without waiting for a full

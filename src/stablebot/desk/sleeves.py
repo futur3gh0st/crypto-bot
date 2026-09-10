@@ -472,12 +472,17 @@ class PairCompleteSleeve(Sleeve):
         )
 
     async def setup(self, state: DeskState) -> None:
-        from stablebot.kalshi.session import recompute_shared_session
+        from stablebot.kalshi.session import ledger_pnl, recompute_shared_session
 
         sess = recompute_shared_session()
         self._pot_start = float(sess.get("starting_equity") or 1000.0)
-        # replayed ledger PnL is history, not this session's result
-        self._realized = 0.0
+        # Carry this ledger's PnL, the way kalshi_lag carries its session file.
+        # The desk sums pot_start + pot_pnl over every sleeve, so one pot
+        # reporting since-inception while another reports since-this-restart
+        # makes the total neither — the locks were the latter, which hid a whole
+        # run of completed pairs after any restart. Own ledger only: this sleeve
+        # shares its pot with the other lock sleeve.
+        self._realized = ledger_pnl("poly")
         stat = self.stat(state)
         stat.detail = f"{len(self.coins)} coins / {self.windows} windows"
         stat.params.setdefault("min_lock", self.cfg.poly.min_lock)
@@ -620,10 +625,11 @@ class KalshiSleeve(Sleeve):
     async def setup(self, state: DeskState) -> None:
         from stablebot.exchanges.base import USER_AGENT
         from stablebot.kalshi.client import KalshiClient
-        from stablebot.kalshi.session import recompute_shared_session
+        from stablebot.kalshi.session import ledger_pnl, recompute_shared_session
 
         sess = recompute_shared_session()
         self._pot_start = float(sess.get("starting_equity") or 1000.0)
+        self._realized = ledger_pnl("kalshi")   # own ledger; pot is shared
         self.http = httpx.AsyncClient(
             timeout=httpx.Timeout(12.0),
             headers={"User-Agent": USER_AGENT, "Accept": "application/json"},

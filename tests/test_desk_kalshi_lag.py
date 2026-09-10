@@ -526,3 +526,75 @@ def test_every_scanned_coin_has_a_reference_and_a_vol_source():
         )
         assert coin in COIN_SPOT, f"{coin}: no spot symbol for vol seeding"
         assert coin in BINANCE_FALLBACK, f"{coin}: no Binance fallback"
+
+
+# ---------------------------------------------------------------------------
+# a series Kalshi is not listing should stop costing API calls
+# ---------------------------------------------------------------------------
+
+
+def _engine():
+    from stablebot.desk.kalshi_lag import KalshiLagPaper, LagParams
+
+    return KalshiLagPaper(params=LagParams(), starting_balance=1000.0)
+
+
+def test_a_series_goes_dormant_only_after_repeated_empty_listings():
+    """One empty poll is a blip; three in a row means Kalshi is not listing it."""
+    from stablebot.desk.kalshi_lag import DORMANT_AFTER
+
+    eng = _engine()
+    now = 1_000_000.0
+    for i in range(DORMANT_AFTER - 1):
+        assert eng._series_empty("KXADA15M", now) is False, f"dormant too early at {i+1}"
+        assert not eng.series_is_dormant("KXADA15M", now)
+    assert eng._series_empty("KXADA15M", now) is True
+    assert eng.series_is_dormant("KXADA15M", now)
+
+
+def test_a_dormant_series_wakes_up_for_a_re_probe():
+    from stablebot.desk.kalshi_lag import DORMANT_AFTER, DORMANT_SECONDS
+
+    eng = _engine()
+    now = 1_000_000.0
+    for _ in range(DORMANT_AFTER):
+        eng._series_empty("KXTON15M", now)
+    assert eng.series_is_dormant("KXTON15M", now)
+    assert eng.series_is_dormant("KXTON15M", now + DORMANT_SECONDS - 1)
+    assert not eng.series_is_dormant("KXTON15M", now + DORMANT_SECONDS + 1)
+
+
+def test_a_market_appearing_clears_the_miss_streak():
+    """Two empties then a listing must not leave the series one poll from sleep."""
+    from stablebot.desk.kalshi_lag import DORMANT_AFTER
+
+    eng = _engine()
+    now = 1_000_000.0
+    for _ in range(DORMANT_AFTER - 1):
+        eng._series_empty("KXBCH15M", now)
+    eng._series_listed("KXBCH15M")
+    assert eng._series_empty("KXBCH15M", now) is False
+    assert not eng.series_is_dormant("KXBCH15M", now)
+
+
+def test_series_are_tracked_independently():
+    from stablebot.desk.kalshi_lag import DORMANT_AFTER
+
+    eng = _engine()
+    now = 1_000_000.0
+    for _ in range(DORMANT_AFTER):
+        eng._series_empty("KXADA15M", now)
+    assert eng.series_is_dormant("KXADA15M", now)
+    assert not eng.series_is_dormant("KXBTC15M", now), "a healthy series must not sleep"
+
+
+def test_series_dormant_is_a_countable_gate():
+    """Out-of-band markets stay window_timing; only an unlisted series is dormant."""
+    from stablebot.desk.signal import GATES, GateCounter
+
+    assert "series_dormant" in GATES
+    assert "window_timing" in GATES
+    gc = GateCounter()
+    gc.hit("series_dormant", "KXADA15M not listing")
+    assert gc.counts["series_dormant"] == 1
+    assert gc.binding() == ("series_dormant", 1)

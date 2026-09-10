@@ -825,3 +825,43 @@ def test_every_probe_targets_the_host_its_client_uses():
         assert PROBES[venue][1].startswith(host), (
             f"{venue} probes {PROBES[venue][1]} but its client uses {host}"
         )
+
+
+# ---------------------------------------------------------------------------
+# lock sleeves share a pot: seed from own ledger, never the combined figure
+# ---------------------------------------------------------------------------
+
+
+def test_ledger_pnl_splits_by_ledger_and_sums_to_the_shared_session(tmp_path):
+    from stablebot.kalshi.session import ledger_pnl
+
+    poly = tmp_path / "poly_ledger.jsonl"
+    kalshi = tmp_path / "kalshi_ledger.jsonl"
+    poly.write_text("\n".join(json.dumps(r) for r in [
+        {"kind": "pair_complete", "pnl": 2.0},
+        {"kind": "complete_hedge", "pnl": 1.0},
+        {"kind": "spot_lag", "pnl": 99.0},        # not a lock; must not count
+    ]), encoding="utf-8")
+    kalshi.write_text(json.dumps({"kind": "pair_complete", "pnl": 0.5}), encoding="utf-8")
+
+    assert ledger_pnl("poly", poly) == pytest.approx(3.0)
+    assert ledger_pnl("kalshi", kalshi) == pytest.approx(0.5)
+
+
+def test_two_lock_sleeves_on_one_pot_do_not_double_count_history():
+    """pot_start is de-duplicated by pot_id but pot_pnl is summed, so each
+    sleeve must carry only its own ledger's result.
+    """
+    app = _app([
+        _FakeSleeve("poly_lock", "poly_shared", 1000.0, 61.06),   # poly ledger
+        _FakeSleeve("kalshi_lock", "poly_shared", 1000.0, 0.0),   # kalshi ledger
+    ])
+    app._refresh_equity()
+    assert app.state.starting_equity == pytest.approx(1000.0)
+    assert app.state.equity == pytest.approx(1061.06)
+
+
+def test_a_missing_ledger_seeds_zero_not_an_error(tmp_path):
+    from stablebot.kalshi.session import ledger_pnl
+
+    assert ledger_pnl("poly", tmp_path / "nope.jsonl") == 0.0

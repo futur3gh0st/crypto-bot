@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from stablebot.config import PolyCfg, data_dir
-from stablebot.poly.markets import ScanRow
+from stablebot.poly.markets import ScanRow, slug_is_settled
 from stablebot.poly.replay import poly_taker_fee
 from stablebot.poly.strategy import can_pair_complete, fade_side, lock_edge
+
+# Kinds that leave a fully hedged pair — riskless at settlement.
+_LOCK_KINDS = frozenset({"pair_complete", "one_leg_unwind", "complete_hedge"})
 
 
 def _iso(ts: datetime | None = None) -> str:
@@ -96,10 +100,24 @@ class PolyPaper:
         self._replay()
 
     def _replay(self) -> None:
+        now = time.time()
         for rec in self.ledger.load():
             slug = str(rec.get("slug") or "")
             kind = rec.get("kind")
             if not slug:
+                continue
+            if kind in _LOCK_KINDS and slug_is_settled(slug, now):
+                # A completed pair pays $1 at settlement, so once the window
+                # closes it is booked history rather than a position. Remember
+                # it in `completed` so the market is never re-locked, but do
+                # not carry its cost: inventory was only ever added to, and a
+                # day of settled locks piled into open_cost until
+                # `capacity = budget - open_cost` hit zero and the risk governor
+                # silently stopped every sleeve from entering.
+                #
+                # Only lock kinds. A bare fade leg is a real directional
+                # position and is left exactly as it was.
+                self.completed.add(slug)
                 continue
             inv = self.inv.setdefault(slug, Inventory())
             if kind == "pair_complete":
@@ -123,7 +141,24 @@ class PolyPaper:
                 if side in {"up", "down"}:
                     inv.add(side, shares, px)
 
+    def expire(self, now_ts: float | None = None) -> int:
+        """Drop settled *lock* inventory. Returns how many entries went.
+
+        Scoped to completed pairs on purpose: those are riskless once the
+        window closes, so holding them in inventory only inflates open_cost.
+        A fade is directional and is not touched here.
+        """
+        now_ts = time.time() if now_ts is None else now_ts
+        gone = [
+            slug for slug in self.inv
+            if slug in self.completed and slug_is_settled(slug, now_ts)
+        ]
+        for slug in gone:
+            del self.inv[slug]
+        return len(gone)
+
     def step(self, rows: list[ScanRow], now: datetime | None = None) -> list[PaperFill]:
+        self.expire(now.timestamp() if now is not None else None)
         fills: list[PaperFill] = []
         for row in rows:
             fills.extend(self._maybe_lock(row, now))
