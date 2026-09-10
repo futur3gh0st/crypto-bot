@@ -61,7 +61,7 @@ def load_stream():
     return ev
 
 
-def run(pot=10000.0, use_allocator=True):
+def run(pot=10000.0, use_allocator=True, lock_clip_cap=None):
     ev = load_stream()
     if not ev:
         print("no sleeve trades to combine"); return None
@@ -108,6 +108,9 @@ def run(pot=10000.0, use_allocator=True):
         if use_allocator and not st.enabled:
             benched_skips += 1; continue
         clip = st.clip if (use_allocator and st.clip > 0) else 15.0
+        if lock_clip_cap is not None and e["sleeve"] == "poly_lock":
+            # the book holds what it holds; wanting more does not deepen it
+            clip = min(clip, lock_clip_cap)
         if clip <= 0:
             benched_skips += 1; continue
         shares = clip / max(e["unit_cost"], 1e-9)
@@ -136,9 +139,12 @@ def run(pot=10000.0, use_allocator=True):
 
 
 if __name__ == "__main__":
-    for label, ua in (("autopilot ON (allocator benches losers)", True),
-                      ("autopilot OFF (flat $15 clips)", False)):
-        r = run(10000.0, ua)
+    import sys as _s
+    cap = float(_s.argv[1]) if len(_s.argv) > 1 else None
+    tag = "" if cap is None else f", poly_lock capped at ${cap:.0f} of real depth"
+    for label, ua in ((f"autopilot ON (allocator benches losers){tag}", True),
+                      (f"autopilot OFF (flat $15 clips){tag}", False)):
+        r = run(10000.0, ua, cap)
         if not r:
             continue
         print(f"\n=== {label} ===")

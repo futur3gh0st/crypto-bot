@@ -33,8 +33,10 @@ def main():
     lock_n = len(locks)
 
     # portfolio results (measured, see scripts/bt/portfolio.py)
-    P = dict(on=1636.19, off=-396.70, on_nolock=-27.93, off_nolock=-2060.82,
-             lock_pnl=1664.12, sl_pnl=-2058.95, kl_pnl=-1.87,
+    P = dict(on=193.95, off=-1838.93, on_nolock=-27.93, off_nolock=-2060.82,
+             on_full=1636.19, off_full=-396.70,
+             lock_pnl=221.88, lock_pnl_full=1664.12, sl_pnl=-2058.95, kl_pnl=-1.87,
+             avg_deployed=1.45, peak_deployed=120.0,
              sl_trades=2957, kl_trades=444,
              sl_benched_after=21, kl_benched_after=8, skipped=3372,
              dd_on=0.6, dd_off=9.2, dd_off_nolock=23.2)
@@ -47,20 +49,47 @@ def main():
     A("## Headline\n")
     A(f"| Configuration | End balance | P&L |")
     A(f"|---|---:|---:|")
-    A(f"| **Autopilot ON** (as the desk ships) | ${START+P['on']:,.0f} | **{P['on']:+,.0f} ({100*P['on']/START:+.1f}%)** |")
-    A(f"| Autopilot OFF (flat $15 clips) | ${START+P['off']:,.0f} | {P['off']:+,.0f} ({100*P['off']/START:+.1f}%) |")
+    A(f"| **Autopilot ON**, locks sized to real book depth | ${START+P['on']:,.0f} | **{P['on']:+,.0f} ({100*P['on']/START:+.1f}%)** |")
+    A(f"| Autopilot OFF, locks sized to real book depth | ${START+P['off']:,.0f} | {P['off']:+,.0f} ({100*P['off']/START:+.1f}%) |")
     A(f"| Autopilot ON, excluding Poly Lock | ${START+P['on_nolock']:,.0f} | {P['on_nolock']:+,.0f} ({100*P['on_nolock']/START:+.1f}%) |")
     A(f"| Autopilot OFF, excluding Poly Lock | ${START+P['off_nolock']:,.0f} | {P['off_nolock']:+,.0f} ({100*P['off_nolock']/START:+.1f}%) |\n")
-    A("**Read the second and third rows before the first.** The +16.4% is real only if "
-      "Poly Lock's fills are real, and those are the least verifiable numbers here "
-      "(see *Poly Lock* below). Strip that one sleeve out and the desk is flat: "
-      f"**{P['on_nolock']:+,.0f}**.\n")
+    A(f"An earlier draft of this report headlined **{P['on_full']:+,.0f} (+16.4%)**. That "
+      f"assumed the lock sleeve could fill $15 a side. Measured on live books, the median "
+      f"two-sided depth on these markets is **$2**, so that figure was roughly 7x too "
+      f"generous. Corrected, the best case is **{P['on']:+,.0f} on $10,000 over 8.5 "
+      f"months**.\n")
 
+    A("## The $10,000 is never used\n")
+    A(f"Average capital deployed across the whole run: **${P['avg_deployed']:.2f}**. Peak: "
+      f"**${P['peak_deployed']:,.0f}**. That is 0.014% of the pot on average.\n")
+    A("Two things cause it, and only one of them is a setting:\n")
+    A("* the clip is `min(risk_frac * equity, fixed_clip)` = `min($500, $15)`, and the "
+      "allocator's own `max_clip` is 15.0 — so the $15 constant binds and your balance "
+      "never enters the calculation;")
+    A("* **the books cannot absorb more.** Sampled live across BTC/ETH/SOL/XRP/DOGE/BNB "
+      "on both 5m and 15m windows:\n")
+    A("| Venue | Resting size |")
+    A("|---|---:|")
+    A("| Polymarket, best ask, one side | median **$9** (p25 $2, p75 $20) |")
+    A("| Polymarket, within 1c of the ask | median **$25** |")
+    A("| Polymarket, **lock** (both sides at once) | median **$2** (p75 $9, max $25) |")
+    A("| Kalshi 15m, liftable at the touch | median **$59** (p75 $148) |\n")
+    A("So raising the clip does not raise the profit. It raises the losses, because the "
+      "only sleeve that makes money is the one with $2 of depth:\n")
+    A("| Clip | Spot-Lag | Poly Lock | Kalshi Lag | Total |")
+    A("|---|---:|---:|---:|---:|")
+    A("| $15 (as shipped) | -2,059 | +197 | -2 | **-1,863** |")
+    A("| $30 | -4,118 | +197 | -4 | **-3,924** |")
+    A("| $75 | -10,295 | +197 | -9 | **-10,107** |")
+    A("| $150 | -20,590 | +197 | -19 | **-20,411** |\n")
+    A("Poly Lock stays pinned at ~$197 in every row: the order book does not deepen "
+      "because we would like it to. Everything else scales linearly with the stake, and "
+      "everything else loses. **This strategy has no capacity.**\n")
     A("## Per-sleeve, at flat $15 clips\n")
     A("| Sleeve | Period covered | Trades | P&L | Notes |")
     A("|---|---|---:|---:|---|")
     A(f"| Spot-Lag (Polymarket) | Jan 1 – Sep 10 | {P['sl_trades']:,} | {P['sl_pnl']:+,.0f} | fill prices modelled, not observed |")
-    A(f"| Poly Lock | Jan 1 – Sep 10 | {lock_n:,} | {P['lock_pnl']:+,.0f} | upper bound; depth not modelled |")
+    A(f"| Poly Lock | Jan 1 – Sep 10 | {lock_n:,} | {P['lock_pnl']:+,.0f} | sized to the $2 median depth |")
     A(f"| Kalshi Lag | Jul 3 – Sep 10 | {P['kl_trades']:,} | {P['kl_pnl']:+,.2f} | **real order book** |")
     A(f"| Kalshi Lock | Jul 3 – Sep 10 | 0 | 0 | structurally impossible |\n")
 
@@ -145,7 +174,9 @@ def main():
       "sampled observations, and only 1 in 467 falls below the 0.97 the 3c gate needs.\n")
     A("Live books confirm genuine locks exist but are rare: the sum of real asks has a median "
       "of **1.010**, yet **2.4%** of snapshots did show a fillable 3c lock. Depth is not "
-      f"modelled, so treat {P['lock_pnl']:+,.0f} as an upper bound.\n")
+      f"modelled in the replay itself, so the sleeve is re-sized to the $2 median "
+      f"two-sided depth measured live: {P['lock_pnl']:+,.0f}, against "
+      f"{P['lock_pnl_full']:+,.0f} if $15 a side were fillable.\n")
 
     A("## Coverage and limits\n")
     A("* **Kalshi's 15-minute crypto series did not exist before ~3 July 2026.** Its two "
@@ -165,7 +196,10 @@ def main():
       "rule that backtests are price-only.\n")
 
     A("## Bottom line\n")
-    A("Over eight and a half months the desk does not make money in any way I can verify. "
+    A(f"Over eight and a half months the best configuration returns "
+      f"**{P['on']:+,.0f} on $10,000 — {100*P['on']/START:+.1f}%** — and it gets there by "
+      f"trading an average of $1.45 at a time into books holding $2. "
+      "The desk does not make money in any way I can verify. "
       "The one sleeve measurable against a real order book is flat to the cent. One lock "
       "sleeve cannot fire at all; the other fires on nine windows in a thousand and its "
       "profit depends on depth I cannot see. The sleeve that appears to print +57% is "

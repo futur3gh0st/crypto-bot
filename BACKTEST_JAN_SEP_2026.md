@@ -6,19 +6,46 @@ Starting balance **$10,000**. Paper only — no live order path was used.
 
 | Configuration | End balance | P&L |
 |---|---:|---:|
-| **Autopilot ON** (as the desk ships) | $11,636 | **+1,636 (+16.4%)** |
-| Autopilot OFF (flat $15 clips) | $9,603 | -397 (-4.0%) |
+| **Autopilot ON**, locks sized to real book depth | $10,194 | **+194 (+1.9%)** |
+| Autopilot OFF, locks sized to real book depth | $8,161 | -1,839 (-18.4%) |
 | Autopilot ON, excluding Poly Lock | $9,972 | -28 (-0.3%) |
 | Autopilot OFF, excluding Poly Lock | $7,939 | -2,061 (-20.6%) |
 
-**Read the second and third rows before the first.** The +16.4% is real only if Poly Lock's fills are real, and those are the least verifiable numbers here (see *Poly Lock* below). Strip that one sleeve out and the desk is flat: **-28**.
+An earlier draft of this report headlined **+1,636 (+16.4%)**. That assumed the lock sleeve could fill $15 a side. Measured on live books, the median two-sided depth on these markets is **$2**, so that figure was roughly 7x too generous. Corrected, the best case is **+194 on $10,000 over 8.5 months**.
+
+## The $10,000 is never used
+
+Average capital deployed across the whole run: **$1.45**. Peak: **$120**. That is 0.014% of the pot on average.
+
+Two things cause it, and only one of them is a setting:
+
+* the clip is `min(risk_frac * equity, fixed_clip)` = `min($500, $15)`, and the allocator's own `max_clip` is 15.0 — so the $15 constant binds and your balance never enters the calculation;
+* **the books cannot absorb more.** Sampled live across BTC/ETH/SOL/XRP/DOGE/BNB on both 5m and 15m windows:
+
+| Venue | Resting size |
+|---|---:|
+| Polymarket, best ask, one side | median **$9** (p25 $2, p75 $20) |
+| Polymarket, within 1c of the ask | median **$25** |
+| Polymarket, **lock** (both sides at once) | median **$2** (p75 $9, max $25) |
+| Kalshi 15m, liftable at the touch | median **$59** (p75 $148) |
+
+So raising the clip does not raise the profit. It raises the losses, because the only sleeve that makes money is the one with $2 of depth:
+
+| Clip | Spot-Lag | Poly Lock | Kalshi Lag | Total |
+|---|---:|---:|---:|---:|
+| $15 (as shipped) | -2,059 | +197 | -2 | **-1,863** |
+| $30 | -4,118 | +197 | -4 | **-3,924** |
+| $75 | -10,295 | +197 | -9 | **-10,107** |
+| $150 | -20,590 | +197 | -19 | **-20,411** |
+
+Poly Lock stays pinned at ~$197 in every row: the order book does not deepen because we would like it to. Everything else scales linearly with the stake, and everything else loses. **This strategy has no capacity.**
 
 ## Per-sleeve, at flat $15 clips
 
 | Sleeve | Period covered | Trades | P&L | Notes |
 |---|---|---:|---:|---|
 | Spot-Lag (Polymarket) | Jan 1 – Sep 10 | 2,957 | -2,059 | fill prices modelled, not observed |
-| Poly Lock | Jan 1 – Sep 10 | 1,386 | +1,664 | upper bound; depth not modelled |
+| Poly Lock | Jan 1 – Sep 10 | 1,386 | +222 | sized to the $2 median depth |
 | Kalshi Lag | Jul 3 – Sep 10 | 444 | -1.87 | **real order book** |
 | Kalshi Lock | Jul 3 – Sep 10 | 0 | 0 | structurally impossible |
 
@@ -83,7 +110,7 @@ Over 252 days and 148,557 resolved 15-minute windows across 7 coins:
 
 The naive rule is not usable: pairing a fresh print against a stale one across a fast move manufactures the gap. Same-timestamp pairs sum to exactly 1.000 in 423 of 467 sampled observations, and only 1 in 467 falls below the 0.97 the 3c gate needs.
 
-Live books confirm genuine locks exist but are rare: the sum of real asks has a median of **1.010**, yet **2.4%** of snapshots did show a fillable 3c lock. Depth is not modelled, so treat +1,664 as an upper bound.
+Live books confirm genuine locks exist but are rare: the sum of real asks has a median of **1.010**, yet **2.4%** of snapshots did show a fillable 3c lock. Depth is not modelled in the replay itself, so the sleeve is re-sized to the $2 median two-sided depth measured live: +222, against +1,664 if $15 a side were fillable.
 
 ## Coverage and limits
 
@@ -96,7 +123,7 @@ Live books confirm genuine locks exist but are rare: the sum of real asks has a 
 
 ## Bottom line
 
-Over eight and a half months the desk does not make money in any way I can verify. The one sleeve measurable against a real order book is flat to the cent. One lock sleeve cannot fire at all; the other fires on nine windows in a thousand and its profit depends on depth I cannot see. The sleeve that appears to print +57% is filling at quotes that did not exist.
+Over eight and a half months the best configuration returns **+194 on $10,000 — +1.9%** — and it gets there by trading an average of $1.45 at a time into books holding $2. The desk does not make money in any way I can verify. The one sleeve measurable against a real order book is flat to the cent. One lock sleeve cannot fire at all; the other fires on nine windows in a thousand and its profit depends on depth I cannot see. The sleeve that appears to print +57% is filling at quotes that did not exist.
 
 That is the expected result for short-dated binaries on two reasonably efficient venues, and it matches the project's own stated prior.
 
