@@ -1,0 +1,212 @@
+# Stablebot strategy + venue config. Env vars in .env override secrets only.
+
+watchlist:
+  stables:
+    - USDT
+    - USDC
+    - DAI
+    - FDUSD
+    - TUSD
+    - USDE
+    - EURC
+    - PYUSD
+  extra_quotes:
+    - USD
+    - EUR
+  usd_pegged:
+    - USDT
+    - USDC
+    - DAI
+    - FDUSD
+    - TUSD
+    - USDE
+    - PYUSD
+  eur_pegged:
+    - EURC
+
+# Retail taker fees are often worse than "0.1% CEX" marketing.
+# Coinbase / Kraken defaults here are closer to small-account reality.
+venues:
+  binance:
+    enabled: true
+    taker_fee_bps: 10.0
+  coinbase:
+    enabled: true
+    taker_fee_bps: 60.0
+  kraken:
+    enabled: true
+    taker_fee_bps: 26.0
+  bybit:
+    enabled: true
+    taker_fee_bps: 10.0
+
+strategy:
+  min_edge_bps: 8.0
+  depeg_bps: 30.0
+  paper_notional_usd: 1000.0
+  scan_interval_sec: 60
+  # Assumed half bid-ask when history is OHLC-only (backtests).
+  hist_half_spread_bps: 1.0
+  # Persistent TUSD/FDUSD discounts are not free money — do not paper-fill them.
+  trade_cross_pair: false
+
+risk:
+  fear_cut_threshold: 0.60
+  fear_skip_threshold: 0.85
+  fear_size_mult: 0.25
+  max_open_paper_notional: 10000.0
+  # 16% on a $15 clip is 32 losing trades of headroom — enough to reach the
+  # n>=30 the calibration report needs inside a day. Raised with the drawdown
+  # halt (25%) so the two tiers keep doing different jobs: this one catches a
+  # bad day, that one catches a bad run.
+  daily_stop_pct: 0.16
+  funding_sleeve_max: 0.60
+  depeg_sleeve_max: 0.25
+  depeg_per_name_max: 0.10
+
+x:
+  enabled: true
+  max_results: 50
+  query: "(USDT OR USDC OR DAI OR FDUSD OR EURC OR PYUSD OR Tether OR Circle OR stablecoin OR depeg OR USDe) lang:en -is:retweet"
+
+backtest:
+  interval: "1h"
+  # Max fraction of equity to put on one paper fill
+  max_fraction: 0.25
+  # Prefer these pairs when fetching history (skip silently if missing)
+  pairs:
+    - USDC/USDT
+    - FDUSD/USDT
+    - TUSD/USDT
+    - DAI/USDT
+    - USDE/USDT
+    - PYUSD/USDT
+    - EURC/USDT
+    - EURC/USDC
+    - FDUSD/USDC
+    - USDT/USD
+    - USDC/USD
+    - DAI/USD
+    - PYUSD/USD
+    - EURC/USD
+    - USDT/USDC
+
+# Funding harvest uses OKX public perps (Binance USD-M fapi returns HTTP 451 here).
+funding:
+  venue: okx
+  core:
+    - BTC-USDT-SWAP
+    - ETH-USDT-SWAP
+    - SOL-USDT-SWAP
+  alt_candidates:
+    - INJ-USDT-SWAP
+    - NEAR-USDT-SWAP
+    - AVAX-USDT-SWAP
+    - PEPE-USDT-SWAP
+    - BNB-USDT-SWAP
+    - SUI-USDT-SWAP
+    - DOGE-USDT-SWAP
+    - LINK-USDT-SWAP
+    - XRP-USDT-SWAP
+  n_alts: 4
+  min_funding: 0.0003      # 3 bp per 8h print; sit flat if nothing clears this
+  exit_funding: 0.00005    # 0.5 bp — exit on sign flip OR |avg| below this
+  trail_prints: 3
+  cooldown_hours: 24       # anti-churn: no re-entry on same symbol within 24h of exit
+  equity_frac: 0.50
+  sleeve_max: 0.60
+  spot_taker_bps: 10.0
+  perp_taker_bps: 5.0
+  spot_maker_bps: 2.0
+  perp_maker_bps: 2.0
+  funding_use_maker: true  # maker path default; set false to use taker bps
+  half_spread_bps: 1.0
+  model_basis: false       # basis PnL approximated as 0 (see README)
+
+depeg_fade:
+  entry_bps: 35.0
+  peg_band_bps: 15.0       # acute: must have been inside ±15 bp in prior 24h
+  lookback_hours: 24
+  exit_bps: 10.0
+  stop_bps: 150.0
+  consecutive_hours: 2
+  max_hold_hours: 72
+  sleeve_max: 0.25
+  per_name_max: 0.10
+  candidates:
+    - TUSD
+    - FDUSD
+    - USDE
+    - DAI
+    - PYUSD
+  fiat_only_extras:
+    - USDT
+    - USDC
+  quotes:
+    - USDT
+    - USD
+
+# Optional: unallocated cash earns a live public USDC supply APY if fetch works.
+# Never a hardcoded rate. If the public endpoint fails, idle cash earns 0.
+idle_yield:
+  enabled: true
+
+
+# Paper-only Polymarket crypto Up/Down. No live orders.
+# taker_fee_bps default 0 — fee assumed 0, check live schedule.
+# Official crypto taker (2026-08 docs) is C * 0.07 * p * (1-p); we do not apply
+# that curve or invent a rebate. Set taker_fee_bps if you want a flat haircut.
+poly:
+  coins:
+    - btc
+    - eth
+    - sol
+    - xrp
+    - doge
+    - bnb
+    - hype
+  windows:
+    - 5
+    - 15
+  taker_fee_bps: 0.0
+  min_lock: 0.03
+  apply_curve_fee: true
+  paper_shares: 20.0
+  fade_threshold: 0.08
+  max_inventory: 50.0
+  fair_scale: 25.0
+  # Live is OFF by default. Do not set POLY_LIVE here (env only).
+  # live_max_shares: 20
+  # live_daily_notional: 200
+  # live_balance_buffer: 0.10
+  # live_ask_size_mult: 2.0
+
+
+# Paper-only Kalshi 15m YES/NO pair-complete. No live orders. No API keys.
+# Shared $1000 paper pool with poly (data/poly_session.json).
+# Fee: paper uses 0.07*p*(1-p) per side (unrounded per-contract, like poly).
+# Official July 2026 is round_up(0.07*C*P*(1-P)); applied before accepting a lock.
+# Series that 404 are dropped after one probe. Empty open books skip quietly.
+kalshi:
+  series:
+    - KXBTC15M
+    - KXETH15M
+    - KXSOL15M
+    - KXXRP15M
+    - KXDOGE15M
+    - KXBNB15M
+    - KXHYPE15M
+    - KXADA15M
+    - KXBCH15M
+    - KXNEAR15M
+    - KXTON15M
+    - KXZEC15M
+    - KXGOLD15M
+    - KXSILVER15M
+    - KXWTI15M
+    - KXNDQ15M
+    - KXINX15M
+  min_lock: 0.03
+  apply_curve_fee: true
+  paper_shares: 20.0
+  throttle_ms: 180

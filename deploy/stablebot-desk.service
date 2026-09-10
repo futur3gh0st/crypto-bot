@@ -1,0 +1,43 @@
+# /etc/systemd/system/stablebot-desk.service
+#
+#   sudo cp deploy/stablebot-desk.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now stablebot-desk
+#   journalctl -u stablebot-desk -f
+#
+[Unit]
+Description=stablebot paper trading desk (headless)
+Documentation=file:///opt/stablebot/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=stablebot
+Group=stablebot
+WorkingDirectory=/opt/stablebot
+Environment=PYTHONUNBUFFERED=1
+# Uncomment only if you bind --serve off 127.0.0.1:
+# Environment=STABLEBOT_DESK_TOKEN=change-me
+ExecStart=/opt/stablebot/.venv/bin/stablebot desk --headless --serve 127.0.0.1:8787
+
+Restart=always
+RestartSec=10
+# The desk handles SIGTERM and closes sleeves; give it room before SIGKILL.
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# It needs outbound HTTPS and its own data/ directory, nothing else.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/stablebot/data
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

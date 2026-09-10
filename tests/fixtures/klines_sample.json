@@ -1,0 +1,1088 @@
+{
+  "notes": [
+    "synthetic fixture for unit tests; not live market data"
+  ],
+  "skipped": [],
+  "bars": [
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T00:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T00:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T00:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T01:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T01:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T01:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T02:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T02:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T02:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T03:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T03:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T03:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T04:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T04:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T04:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T05:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T05:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T05:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T06:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T06:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T06:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T07:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T07:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T07:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T08:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T08:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T08:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T09:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T09:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T09:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T10:00:00+00:00",
+      "open": 0.997,
+      "high": 0.9971,
+      "low": 0.9969,
+      "close": 0.997
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T10:00:00+00:00",
+      "open": 1.0015,
+      "high": 1.0016,
+      "low": 1.0014,
+      "close": 1.0015
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T10:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T11:00:00+00:00",
+      "open": 0.9972,
+      "high": 0.9973,
+      "low": 0.9971,
+      "close": 0.9972
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T11:00:00+00:00",
+      "open": 1.0014,
+      "high": 1.0015,
+      "low": 1.0013,
+      "close": 1.0014
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T11:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T12:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T12:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T12:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T13:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T13:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T13:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T14:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T14:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T14:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T15:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T15:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T15:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T16:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T16:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T16:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T17:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T17:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T17:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T18:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T18:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T18:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T19:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T19:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T19:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T20:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T20:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T20:00:00+00:00",
+      "open": 0.994,
+      "high": 0.9942,
+      "low": 0.9938,
+      "close": 0.994
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T21:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T21:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T21:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T22:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T22:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T22:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T23:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-01T23:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-01T23:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T00:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T00:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T00:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T01:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T01:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T01:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T02:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T02:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T02:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T03:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T03:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T03:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T04:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T04:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T04:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T05:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T05:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T05:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T06:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T06:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T06:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T07:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T07:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T07:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T08:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T08:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T08:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T09:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T09:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T09:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T10:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T10:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T10:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    },
+    {
+      "venue": "binance",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T11:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "bybit",
+      "base": "USDC",
+      "quote": "USDT",
+      "open_time": "2026-07-02T11:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0001,
+      "low": 0.9999,
+      "close": 1.0
+    },
+    {
+      "venue": "kraken",
+      "base": "USDT",
+      "quote": "USD",
+      "open_time": "2026-07-02T11:00:00+00:00",
+      "open": 1.0,
+      "high": 1.0002,
+      "low": 0.9998,
+      "close": 1.0
+    }
+  ]
+}

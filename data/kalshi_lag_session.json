@@ -1,0 +1,11 @@
+{
+  "starting_equity": 1000.0,
+  "equity": 871.84980756247,
+  "cash": 871.84980756247,
+  "open_cost": 0,
+  "fills": 6,
+  "resolves": 6,
+  "last_ts": "2026-09-10T00:38:51.743956+00:00",
+  "live": false,
+  "note": "kalshi_lag paper session; separate pot; no live orders"
+}

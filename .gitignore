@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.pyc
+data/*.sqlite
+data/backtests/*.json
+data/backtests/*.csv
+data/backtests/cache/
+.env
+data/poly_ledger.jsonl
+data/poly_live_confirm.txt
+data/poly_halt
+data/kalshi_ledger.jsonl
+data/kalshi_run.log
+
+.env
+data/poly_live_confirm.txt
+data/poly_halt
+
+
+# backtest data caches (large, regenerable)
+data/bt_cache/
+data/spot_lag_bt/
+data/poly_cache/
+src/*.egg-info/

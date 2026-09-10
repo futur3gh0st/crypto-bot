@@ -1,0 +1,14 @@
+services:
+  desk:
+    build: .
+    restart: unless-stopped
+    # Bind to the host's loopback only. Reach it with an SSH tunnel:
+    #   ssh -N -L 8787:127.0.0.1:8787 you@desk-host
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - ./data:/app/data
+    environment:
+      # Required only if you publish the port off loopback.
+      - STABLEBOT_DESK_TOKEN=${STABLEBOT_DESK_TOKEN:-}
+    stop_grace_period: 30s
