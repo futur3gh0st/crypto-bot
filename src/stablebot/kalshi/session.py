@@ -61,6 +61,22 @@ def _qualifying(recs: list[dict[str, Any]], kinds: frozenset[str]) -> list[dict[
     return [r for r in recs if r.get("kind") in kinds]
 
 
+def ledger_pnl(which: str = "poly", path: Path | None = None) -> float:
+    """Realised PnL booked in ONE ledger, counting the same kinds the shared
+    scoreboard counts.
+
+    The two lock sleeves share a pot, and the desk de-duplicates pot_start by
+    pot_id but *sums* pot_pnl across sleeves. Each therefore has to seed from
+    its own ledger; seeding both from the combined figure would book the pot
+    twice.
+    """
+    if which == "poly":
+        recs = _qualifying(load_jsonl(path or poly_ledger_path()), POLY_KINDS)
+    else:
+        recs = _qualifying(load_jsonl(path or kalshi_ledger_path()), KALSHI_KINDS)
+    return sum(float(r.get("pnl") or 0.0) for r in recs)
+
+
 def recompute_shared_session(
     path: Path | None = None,
     poly_ledger: Path | None = None,

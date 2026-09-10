@@ -78,7 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--serve",
         default=None,
         metavar="[HOST:]PORT",
-        help="With --headless, publish state as JSON at /state "
+        help="Publish state as JSON at /state, with or without --headless "
              "(default host 127.0.0.1; binding wider needs STABLEBOT_DESK_TOKEN)",
     )
     desk.add_argument(

@@ -49,7 +49,7 @@ async def run_desk(
     if headless:
         await app.run_headless(serve=serve)
     else:
-        await app.run()
+        await app.run(serve=serve)
     app.print_summary()
 
 
