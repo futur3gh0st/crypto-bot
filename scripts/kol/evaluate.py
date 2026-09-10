@@ -77,16 +77,23 @@ def main():
         print(f"  median {st.median(lags):.0f}s   p25 {lags[int(.25*len(lags))]:.0f}s"
               f"   p75 {lags[int(.75*len(lags))]:.0f}s   max {lags[-1]:.0f}s")
 
-    liq = [(t.get("dex") or {}).get("liq_usd", 0) for t in buys]
-    if liq:
-        liq.sort()
-        thin = sum(1 for x in liq if x < MIN_LIQ)
-        print(f"\nPOOL LIQUIDITY at the moment of copy")
-        print(f"  median ${st.median(liq):,.0f}   p25 ${liq[int(.25*len(liq))]:,.0f}")
-        print(f"  below ${MIN_LIQ:,.0f}: {thin}/{len(liq)} ({100*thin/len(liq):.0f}%)")
+    # DexScreener prices pump.fun bonding-curve tokens but reports no pool size
+    # for them. Treating that as $0 of liquidity was wrong, so keep them apart.
+    liq = [(t.get("dex") or {}).get("liq_usd") or 0 for t in buys]
+    known = sorted(x for x in liq if x > 0)
+    unknown = sum(1 for x in liq if x <= 0)
+    print(f"\nPOOL LIQUIDITY at the moment of copy")
+    if known:
+        thin = sum(1 for x in known if x < MIN_LIQ)
+        print(f"  reported for {len(known)} buys: median ${st.median(known):,.0f}   "
+              f"p25 ${known[int(.25*len(known))]:,.0f}   "
+              f"below ${MIN_LIQ:,.0f}: {thin}/{len(known)}")
+    if unknown:
+        print(f"  not reported for {unknown} buys (pump.fun bonding-curve tokens: "
+              f"DexScreener gives a price but no pool size)")
 
     print(f"\nCOPY RESULT — enter at detection, exit at horizon, {100*FEE:.2f}% per side")
-    print(f"{'horizon':>9} {'n':>5} {'win%':>7} {'mean':>9} {'median':>9} {'total%':>9}")
+    print(f"{'horizon':>9} {'n':>5} {'win%':>7} {'mean':>9} {'median':>9} {'P&L@$100ea':>11}")
     any_row = False
     for h in HORIZONS:
         rets = []
@@ -105,9 +112,12 @@ def main():
         wins = sum(1 for r in rets if r > 0)
         print(f"{h//60:>7}m {len(rets):>5} {100*wins/len(rets):>6.1f}% "
               f"{100*st.mean(rets):>+8.2f}% {100*st.median(rets):>+8.2f}% "
-              f"{100*sum(rets):>+8.1f}%")
+              f"{100*sum(rets):>+11,.0f}")
     if not any_row:
         print("  no horizon has matured yet — price snapshots need more time")
+    else:
+        print("  P&L@$100ea = dollars up/down if you put $100 into every copy "
+              "(not a % of an account)")
 
     by = defaultdict(int)
     for t in trades:
