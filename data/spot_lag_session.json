@@ -5,7 +5,7 @@
   "open_cost": 0.0,
   "fills": 3,
   "resolves": 3,
-  "last_ts": "2026-09-10T02:20:46.019981+00:00",
+  "last_ts": "2026-09-10T02:22:15.953272+00:00",
   "note": "spot_lag paper session; separate from poly_session.json",
   "live": false
 }

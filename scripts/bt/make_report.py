@@ -80,7 +80,8 @@ def main():
     A(f"Filling from Polymarket's `prices-history` exactly as the shipped replay does gives "
       f"Spot-Lag **{naive['pnl']:+,.0f}** on {naive['n']:,} trades "
       f"({100*naive['win']:.1f}% win rate) — a +57% year. That figure is an artifact. "
-      f"Corrected, the same sleeve returns **{sl['pnl']:+,.0f}**.\n")
+      f"Corrected, the same sleeve returns **{P['sl_pnl']:+,.0f}** "
+      f"(on {sl['n']:,} trades that survive the corrected gates).\n")
 
     A("### Why: prices-history is not the order book\n")
     A("Measured live during this run (416 paired book-vs-history observations):\n")

@@ -30,7 +30,7 @@ Note this is a knife-edge: `MIN_SAMPLE` is 8 resolved trades, and a benched slee
 
 ## The number you should not quote
 
-Filling from Polymarket's `prices-history` exactly as the shipped replay does gives Spot-Lag **+5,702** on 5,116 trades (84.2% win rate) — a +57% year. That figure is an artifact. Corrected, the same sleeve returns **-2,115**.
+Filling from Polymarket's `prices-history` exactly as the shipped replay does gives Spot-Lag **+5,702** on 5,116 trades (84.2% win rate) — a +57% year. That figure is an artifact. Corrected, the same sleeve returns **-2,059** (on 2,957 trades that survive the corrected gates).
 
 ### Why: prices-history is not the order book
 
