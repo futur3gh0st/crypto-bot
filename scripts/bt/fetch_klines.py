@@ -17,7 +17,7 @@ CACHE.mkdir(parents=True, exist_ok=True)
 
 VISION = "https://data-api.binance.vision/api/v3/klines"
 UA = "stablebot/0.1 (research paper-trading; no live orders)"
-SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT", "BNBUSDT"]
+SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "XRPUSDT", "DOGEUSDT", "BNBUSDT", "NEARUSDT", "ZECUSDT"]
 
 
 def ms(dt: str) -> int:
