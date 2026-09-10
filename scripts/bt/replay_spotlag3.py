@@ -86,6 +86,7 @@ def run(cands, poly, lag, starting=10000.0, premium=HALF_SPREAD,
             gate("insufficient_cash"); continue
         cash -= cost + fee
         open_pos[r["slug"]] = {"slug": r["slug"], "coin": r["coin"], "ask": ask,
+                               "signal_ts": st,
                                "window_end": r["window_end"], "shares": shares,
                                "cost": cost, "fee": fee, "edge": edge,
                                "won": winner == r["side"]}
@@ -100,6 +101,15 @@ if __name__ == "__main__":
     print("Filling at the price the tape reached `lag` seconds after the signal,")
     print("plus half the live spread (0.005). lag=0 is the naive backtest.\n")
     print(f"{'lag':>6} {'trades':>7} {'win%':>7} {'avg ask':>8} {'PnL':>12} {'end equity':>12}")
+    import json as _j
+    # measured operating point: median print age 31s, ask ~+0.079 above the
+    # print on the favoured side (lag=30 already recovers ~0.032 of that).
+    tr, g, eq = run(cands, poly, 30, start, premium=0.05)
+    with (CACHE / "spotlag_trades_final.jsonl").open("w") as f:
+        for t in tr:
+            t2 = dict(t); t2["signal_ts"] = t2.get("signal_ts", 0)
+            f.write(_j.dumps(t2, separators=(",", ":")) + "\n")
+    print(f"[wrote {len(tr)} corrected trades to spotlag_trades_final.jsonl]\n")
     for lag in (0, 15, 30, 45, 60):
         tr, g, eq = run(cands, poly, lag, start)
         n = len(tr); w = sum(1 for t in tr if t["won"])

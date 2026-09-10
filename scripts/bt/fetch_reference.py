@@ -78,16 +78,17 @@ async def bitstamp(c, coin, lo, hi):
 async def main():
     lo, hi = ep(sys.argv[1]), ep(sys.argv[2])
     async with httpx.AsyncClient(headers={"User-Agent": UA}, timeout=40,
-                                 limits=httpx.Limits(max_connections=8)) as c:
-        for coin in CB:
+                                 limits=httpx.Limits(max_connections=32)) as c:
+        async def one(coin):
             p = CACHE / f"{coin}.json"
             if p.exists():
-                print(f"{coin}: cached"); continue
+                print(f"{coin}: cached", flush=True); return
             t0 = time.time()
             cb, bs = await asyncio.gather(coinbase(c, coin, lo, hi),
                                           bitstamp(c, coin, lo, hi))
             p.write_text(json.dumps({"coinbase": cb, "bitstamp": bs}))
             print(f"{coin}: coinbase={len(cb)} bitstamp={len(bs)} "
                   f"in {time.time()-t0:.0f}s", flush=True)
+        await asyncio.gather(*(one(k) for k in CB))
 
 asyncio.run(main())

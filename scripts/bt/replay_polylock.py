@@ -85,35 +85,51 @@ async def day(c, sem, d: datetime, minutes: int):
         for label, sel, prem in (("naive", prs, 0.0),
                                  ("strict", [p for p in prs if p.t_up == p.t_down], 0.0),
                                  ("real", [p for p in prs if p.t_up == p.t_down], 0.005)):
-            hit = None
+            hit = None; hit_t = None
             for p in sel:
                 a_up, a_dn = p.p_up + prem, p.p_down + prem
                 edge = 1.0 - a_up - a_dn - poly_taker_fee(a_up) - poly_taker_fee(a_dn)
                 if edge > MIN_LOCK:
-                    hit = edge; break
+                    hit = edge; hit_t = p.t; break
             if hit is not None:
                 out[label] += 1
                 out[label + "_pnl"] += shares * hit
+                if label == "real":
+                    out.setdefault("stream", []).append(
+                        {"in": hit_t, "out": e, "edge": hit})
     return out
 
 
 async def main():
-    n_days = int(sys.argv[1]) if len(sys.argv) > 1 else 20
     start = datetime(2026, 1, 1)
     span = (datetime(2026, 9, 9) - start).days
-    days = [start + timedelta(days=int(round(i * span / (n_days - 1)))) for i in range(n_days)]
+    if len(sys.argv) > 1 and sys.argv[1] == "full":
+        days = [start + timedelta(days=i) for i in range(span + 1)]
+    else:
+        n_days = int(sys.argv[1]) if len(sys.argv) > 1 else 20
+        days = [start + timedelta(days=int(round(i * span / (n_days - 1)))) for i in range(n_days)]
+    n_days = len(days)
     tot = {"windows": 0, "naive": 0, "strict": 0, "real": 0,
            "naive_pnl": 0.0, "strict_pnl": 0.0, "real_pnl": 0.0}
     async with httpx.AsyncClient(headers=H, timeout=40,
                                  limits=httpx.Limits(max_connections=48)) as c:
         sem = asyncio.Semaphore(32)
-        for d in days:
-            r = await day(c, sem, d, 15)
-            for k in tot:
-                tot[k] += r[k]
-            print(f"  {d:%Y-%m-%d}: windows={r['windows']:4d} "
-                  f"naive={r['naive']:3d} strict={r['strict']:3d} real={r['real']:3d}",
-                  flush=True)
+        stream = []
+        B = 8
+        for i in range(0, len(days), B):
+            batch = days[i:i + B]
+            rs = await asyncio.gather(*(day(c, sem, d, 15) for d in batch))
+            for d, r in zip(batch, rs):
+                for k in tot:
+                    tot[k] += r.get(k, 0) if not isinstance(tot[k], list) else 0
+                stream += r.get("stream", [])
+                print(f"  {d:%Y-%m-%d}: windows={r['windows']:4d} "
+                      f"naive={r['naive']:3d} strict={r['strict']:3d} real={r['real']:3d}",
+                      flush=True)
+        with (ROOT / "data" / "bt_cache" / "polylock_stream.jsonl").open("w") as fh:
+            for x in sorted(stream, key=lambda z: z["in"]):
+                fh.write(json.dumps(x, separators=(",", ":")) + "\n")
+        print(f"[wrote {len(stream)} lock fills to polylock_stream.jsonl]")
     w = max(tot["windows"], 1)
     print(f"\nSAMPLED {tot['windows']} resolved 15m windows across {n_days} days "
           f"(Jan 1 - Sep 9), {len(COINS)} coins")

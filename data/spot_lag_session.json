@@ -1,11 +1,11 @@
 {
   "starting_equity": 1000.0,
-  "equity": 1000.0,
-  "cash": 1000.0,
-  "open_cost": 0,
-  "fills": 0,
-  "resolves": 0,
-  "last_ts": "2026-09-10T00:38:45.536801+00:00",
+  "equity": 1021.1164959263779,
+  "cash": 1021.1164959263779,
+  "open_cost": 0.0,
+  "fills": 3,
+  "resolves": 3,
+  "last_ts": "2026-09-10T02:20:46.019981+00:00",
   "note": "spot_lag paper session; separate from poly_session.json",
   "live": false
 }
