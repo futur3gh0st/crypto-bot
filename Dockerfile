@@ -18,6 +18,8 @@ COPY src/ ./src/
 RUN pip install --no-cache-dir --no-deps -e .
 
 COPY config.yaml ./
+# The maker forward-test poller runs as a second service from this same image.
+COPY scripts/bt/maker_wx_poll.py ./scripts/bt/
 
 # Paper sessions and ledgers live here. Mount a volume or the P&L resets to
 # $1,000 on every redeploy and the calibration report loses its history.

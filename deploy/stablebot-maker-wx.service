@@ -1,0 +1,42 @@
+# /etc/systemd/system/stablebot-maker-wx.service
+#
+#   sudo cp deploy/stablebot-maker-wx.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now stablebot-maker-wx
+#   journalctl -u stablebot-maker-wx -f
+#
+# Passive-quoting forward test recorder (scripts/bt/maker_wx_poll.py).
+# Read-only against Kalshi + Polymarket; no orders, no keys. Output is
+# append-only under data/bt_cache/maker_wx/ and the process resumes from it.
+[Unit]
+Description=stablebot maker forward-test poller (paper, read-only)
+Documentation=file:///opt/stablebot/DEPLOY.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=stablebot
+Group=stablebot
+WorkingDirectory=/opt/stablebot
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/stablebot/.venv/bin/python scripts/bt/maker_wx_poll.py
+
+Restart=always
+RestartSec=10
+KillSignal=SIGINT
+TimeoutStopSec=10
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/stablebot/data
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target

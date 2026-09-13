@@ -1,0 +1,11 @@
+.git
+.venv
+.env
+__pycache__
+*.pyc
+src/*.egg-info
+data/
+tests/
+report.html
+*.md
+!README.md

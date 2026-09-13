@@ -97,6 +97,39 @@ docker compose logs -f
 `data/` is bind-mounted. Without it every redeploy resets the paper pots to
 $1,000 and throws away the ledger the calibration report reads.
 
+## The second process: the maker forward test
+
+`scripts/bt/maker_wx_poll.py` records Kalshi and Polymarket weather books and
+prints for the pre-registered passive-quoting test (`maker_wx_fill.py` replays
+them, `maker_wx_report.py` scores them). It is read-only and needs no keys.
+
+It has to run on an always-on host, and this is measured, not assumed. Run on a
+laptop from 12 to 13 September, `books.jsonl` held 144 snapshots over 28.1 h;
+34 gaps longer than five minutes covered 24.4 h of that — **87% of the window
+with no book**. `pmset -g log` shows the machine entering sleep at 00:10 local
+and surfacing only for two-to-three-minute DarkWakes, and every poll timestamp
+in that span lands inside one. The fill replay requotes only at a snapshot, so
+a quote modelled as resting across a two-hour gap is filled through by every
+print in between. That is an instrument fault, not adverse selection, and it
+is why the first settled day is not scored.
+
+The poller now prints `warn: clock jumped …` when its sleep overruns by more
+than a poll interval, so a suspended host shows up in the log instead of in
+the P&L.
+
+Compose runs it as `maker-wx-poll` from the same image (`docker compose up -d`
+starts both). Under systemd:
+
+```bash
+sudo cp deploy/stablebot-maker-wx.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now stablebot-maker-wx
+journalctl -u stablebot-maker-wx -f
+```
+
+`data/bt_cache/maker_wx/trades.jsonl` grows ~14 MB a day; 1 GB of disk covers
+the 21-day window with room.
+
 ## Watch it from your laptop
 
 The state feed carries positions, equity and P&L, so it binds to loopback and

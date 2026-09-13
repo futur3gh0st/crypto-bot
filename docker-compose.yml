@@ -11,4 +11,20 @@ services:
     environment:
       # Required only if you publish the port off loopback.
       - STABLEBOT_DESK_TOKEN=${STABLEBOT_DESK_TOKEN:-}
+    # Only the lock sleeves. Spot-Lag and Kalshi Lag measured flat-to-negative
+    # in BACKTEST_JAN_SEP_2026.md; running them here would only add noise to
+    # the ledger expectancy.py scores. kalshi_lock cannot fire, so this is
+    # poly_lock alone.
+    command: ["stablebot", "desk", "--headless", "--sleeves", "locks", "--serve", "0.0.0.0:8787"]
     stop_grace_period: 30s
+
+  # Passive-quoting forward test (scripts/bt/maker_wx_*). Records books and
+  # prints only; no orders. Needs an always-on host: on a laptop that sleeps,
+  # 87% of the first 28 h had no book snapshots (see DEPLOY.md).
+  maker-wx-poll:
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+    command: ["python", "scripts/bt/maker_wx_poll.py"]
+    stop_grace_period: 10s

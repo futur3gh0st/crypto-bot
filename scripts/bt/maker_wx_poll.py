@@ -296,7 +296,16 @@ class Poller:
             last = t0
             print(f"{utcnow().isoformat(timespec='seconds')} live={len(live)} "
                   f"trades_seen={len(self.seen_trades)} took={time.time() - t0:.0f}s", flush=True)
-            time.sleep(max(0.0, POLL_SEC - (time.time() - t0)))
+            nap = max(0.0, POLL_SEC - (time.time() - t0))
+            t1 = time.time()
+            time.sleep(nap)
+            # A sleep that overran by more than a poll interval means the host
+            # was suspended, not that we were slow. Books were not recorded for
+            # that span; say so, because the fill replay cannot tell the two apart.
+            overrun = time.time() - t1 - nap
+            if overrun > POLL_SEC:
+                print(f"  warn: clock jumped {overrun:.0f}s during sleep -- host suspended? "
+                      f"no books recorded for that span", flush=True)
 
 
 if __name__ == "__main__":
