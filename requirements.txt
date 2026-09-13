@@ -1,8 +1,10 @@
+# Runtime dependencies ONLY. Must mirror [project].dependencies in pyproject.toml.
+# Copied separately in the Dockerfile so a code change does not reinstall the world.
+# Dev/test extras live in pyproject.toml under [project.optional-dependencies].
 httpx>=0.27
 pydantic>=2.6
 pydantic-settings>=2.2
 PyYAML>=6.0
 rich>=13.7
 python-dotenv>=1.0
-pytest>=8.0
 matplotlib>=3.8

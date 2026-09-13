@@ -6,7 +6,7 @@ is an empirical question about depth, so measure it on live books: dollars
 resting at the best ask, and cumulative dollars within 1c and 3c of it.
 """
 from __future__ import annotations
-import asyncio, json, statistics, time
+import asyncio, json, time
 import httpx
 
 H = {"User-Agent": "stablebot/0.1 (research paper-trading; no live orders)",
@@ -44,7 +44,9 @@ async def poly(c, out):
                 continue
             pair_touch = 0.0
             ok = True
-            for name, tok in zip(outs, ids):
+            if len(outs) != len(ids):
+                continue
+            for name, tok in zip(outs, ids, strict=True):
                 bk = await jget(c, "https://clob.polymarket.com/book", {"token_id": tok})
                 asks = sorted(((float(x["price"]), float(x["size"]))
                                for x in (bk or {}).get("asks", [])), key=lambda z: z[0])

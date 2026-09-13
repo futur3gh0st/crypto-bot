@@ -14,7 +14,6 @@ from stablebot.poly.markets import ScanRow
 from stablebot.poly.paper import PolyLedger, PolyPaper
 from stablebot.poly.live import (
     CONFIRM_TEXT,
-    ClobLive,
     PolyLive,
     live_gates_ok,
     order_filled,

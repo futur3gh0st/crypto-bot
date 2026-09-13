@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 
 from rich.console import Console
 
-from stablebot.config import AppConfig, EnvSettings, data_dir, env_settings, load_config
+from stablebot.config import AppConfig, EnvSettings, data_dir
 from stablebot.exchanges.base import new_client
 from stablebot.paper.engine import PaperEngine
 from stablebot.paper.ledger import Ledger

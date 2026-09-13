@@ -17,7 +17,6 @@ Public RPC + DexScreener only. No keys, no orders, paper only.
 """
 from __future__ import annotations
 import asyncio, json, time
-from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx

@@ -43,9 +43,9 @@ async def one(c, coin, cache):
             return None
         ids = json.loads(mk.get("clobTokenIds") or "[]")
         outs = json.loads(mk.get("outcomes") or "[]")
-        if len(ids) != 2:
+        if len(ids) != 2 or len(outs) != len(ids):
             return None
-        ent = {o.strip().lower(): t for o, t in zip(outs, ids)}
+        ent = {o.strip().lower(): t for o, t in zip(outs, ids, strict=True)}
         cache[slug] = ent
     # spot move so far this window (which side the desk would favour)
     kl = await jget(c, VISION, {"symbol": SYM[coin], "interval": "1m",

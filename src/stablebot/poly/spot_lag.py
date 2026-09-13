@@ -19,7 +19,6 @@ import httpx
 from rich.console import Console
 
 from stablebot.config import AppConfig, data_dir
-from stablebot.exchanges.base import USER_AGENT
 from stablebot.poly.client import (
     _new_http,
     _safe,

@@ -1,24 +1,32 @@
+# --- Python ---
 .venv/
 __pycache__/
 *.pyc
+src/*.egg-info/
+
+# --- Secrets ---
+.env
+
+# --- Live-trade safety interlocks (must never be committed) ---
+data/poly_live_confirm.txt
+data/poly_halt
+
+# --- Paper runtime state (regenerated every run) ---
 data/*.sqlite
+data/*_session.json
+data/desk_day.json
+
+# --- Paper ledgers (append-only run output) ---
+data/*_ledger.jsonl
+data/kalshi_run.log
+
+# --- Backtest artifacts + data caches (large, regenerable) ---
 data/backtests/*.json
 data/backtests/*.csv
 data/backtests/cache/
-.env
-data/poly_ledger.jsonl
-data/poly_live_confirm.txt
-data/poly_halt
-data/kalshi_ledger.jsonl
-data/kalshi_run.log
-
-.env
-data/poly_live_confirm.txt
-data/poly_halt
-
-
-# backtest data caches (large, regenerable)
 data/bt_cache/
 data/spot_lag_bt/
 data/poly_cache/
-src/*.egg-info/
+
+# local report, not part of the repo
+report.html

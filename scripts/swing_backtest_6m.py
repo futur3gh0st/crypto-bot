@@ -7,7 +7,6 @@ Does not retune. No live orders. Fills only on real public 1h OHLC.
 
 from __future__ import annotations
 
-import csv
 import json
 import sys
 from collections import defaultdict

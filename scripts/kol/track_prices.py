@@ -56,13 +56,17 @@ async def main(cycle=120.0):
     print("price tracker started", flush=True)
     async with httpx.AsyncClient(timeout=20,
                                  limits=httpx.Limits(max_connections=8)) as c:
+        # One semaphore for the process: it only caps concurrency, and rebuilding
+        # it per cycle made every closure below capture a loop variable.
+        sem = asyncio.Semaphore(5)
+
+        async def one(m):
+            async with sem:
+                return await snap(c, m)
+
         while True:
             mints = list(mints_of_interest())
             if mints:
-                sem = asyncio.Semaphore(5)
-                async def one(m):
-                    async with sem:
-                        return await snap(c, m)
                 res = await asyncio.gather(*(one(m) for m in mints))
                 n = 0
                 with SNAPS.open("a") as f:

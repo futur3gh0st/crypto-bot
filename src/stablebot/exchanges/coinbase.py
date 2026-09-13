@@ -6,18 +6,17 @@ from datetime import datetime, timezone
 import httpx
 
 from stablebot.config import AppConfig
-from stablebot.exchanges.base import is_watch_pair
+from stablebot.exchanges.base import ExchangeClient, is_watch_pair
 from stablebot.market.book import Quote
 
 PRODUCTS_URL = "https://api.exchange.coinbase.com/products"
 TICKER_URL = "https://api.exchange.coinbase.com/products/{pid}/ticker"
 
 
-class CoinbaseClient:
+class CoinbaseClient(ExchangeClient):
     name = "coinbase"
 
     async def fetch_quotes(self, client: httpx.AsyncClient, cfg: AppConfig) -> list[Quote]:
-        assets = {a.upper() for a in cfg.watchlist.all_assets()}
         resp = await client.get(PRODUCTS_URL)
         resp.raise_for_status()
         products = resp.json()

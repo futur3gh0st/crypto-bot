@@ -8,6 +8,55 @@
 
 Paper-trading research bot that watches stablecoin pairs on public CEX tickers, flags **fee-aware** cross-venue / cross-pair spreads and depegs, optionally overlays official X API v2 recent-search sentiment, and paper-fills locally. **This is not financial advice and it does not place live orders.** Retail stablecoin arb is usually fee-negative after taker fees, withdrawal/gas, and latency — the bot is built to show that honestly.
 
+## Documentation
+
+| Doc | What's in it |
+|---|---|
+| **[DESK.md](DESK.md)** | The `stablebot desk` full-screen trading desk: sleeves, allocator, risk governor, venue health. Start here to run it. |
+| **[RUN_AND_FUND.md](RUN_AND_FUND.md)** | Getting a paper session running and funded locally. |
+| **[DEPLOY.md](DEPLOY.md)** | Headless deploy to a VPS (Docker, systemd, venue latency). |
+| **[BACKTEST_JAN_SEP_2026.md](BACKTEST_JAN_SEP_2026.md)** | Jan-Sep 2026 backtest results and the portfolio layer. Reproduction steps at the bottom. |
+| **[data/spot_lag_HOW_TO_RUN.md](data/spot_lag_HOW_TO_RUN.md)** | Running the spot-lag sleeve specifically. |
+
+Research scripts live in `scripts/` (`bt/` backtest pipeline, `kol/` copy-trade forward test).
+Superseded ones are parked in [`scripts/bt/superseded/`](scripts/bt/superseded/README.md).
+
+## Running it from the US (paper)
+
+Paper mode authenticates to nothing — **no exchange account or API key is
+required**. Coinbase/Kraken/Gemini/Bitstamp are read as *price references*
+only; the desk never trades on them. Verified reachable from a US connection:
+
+| Endpoint | From the US |
+|---|---|
+| Kalshi, Polymarket (gamma + CLOB), OKX funding | reachable |
+| Coinbase, Kraken, Gemini, Bitstamp | reachable |
+| `data-api.binance.vision` (the mirror the code uses) | reachable |
+| `api.binance.com` | **HTTP 451 — blocked**, mirror used instead |
+| Bybit / `api.bytick.com` | **HTTP 403 — blocked**, venue unavailable |
+
+Optional and not required to run: `X_BEARER_TOKEN` (sentiment, live-only) and
+`CF_BENCHMARKS_API_KEY`.
+
+```bash
+.venv/bin/stablebot desk                      # foreground TUI
+.venv/bin/stablebot desk --auto --headless \
+    --serve 127.0.0.1:8787                    # unattended; state on loopback
+```
+
+### Is the edge real?
+
+P&L alone cannot answer that: a total near $0 over a few hundred trades is
+usually "we cannot tell yet", not "break-even". `scripts/bt/expectancy.py`
+pairs each entry against its outcome and reports the realized interval, the
+edge the model *claimed* versus what it delivered, a calibration table, and how
+many resolved trades are still needed. It refuses to render a verdict below 30
+resolved trades.
+
+```bash
+.venv/bin/python scripts/bt/expectancy.py data/kalshi_lag_ledger.jsonl
+```
+
 ## What it does
 
 Three paper sleeves (default backtest runs all of them):

@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "ruff>=0.16"]
 poly-live = ["py-clob-client-v2"]
 
 [project.scripts]
@@ -31,3 +31,23 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["scripts/bt/superseded"]
+
+[tool.ruff.lint]
+# Deliberately narrow. The full default set flags 410 things here, 130 of them
+# `datetime.UTC` vs `timezone.utc` and 54 import ordering -- churn that would
+# bury anything real. This set is the subset that catches bugs:
+#   F    undefined names, unused imports, dead locals
+#   E9   syntax / IO errors
+#   B    bugbear: closure-over-loop-variable, silent zip truncation
+#   DTZ  naive datetimes -- this system decides whether a market has settled
+#   PLE  pylint errors only, no style
+select = ["F", "E9", "B", "DTZ", "PLE"]
+
+[tool.ruff.lint.per-file-ignores]
+# Research scripts print exploratory tables; unused loop vars there are noise,
+# not defects. The live desk under src/ is held to the full set.
+"scripts/**" = ["B007"]

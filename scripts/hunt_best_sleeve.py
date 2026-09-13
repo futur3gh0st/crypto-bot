@@ -12,9 +12,7 @@ and Dan1ro0 desk pipeline (SPOTTER→PRIOR→EDGE→KELLY→TAKER→CLOSER).
 from __future__ import annotations
 
 import argparse
-import csv
 import json
-import math
 import re
 import sys
 from dataclasses import dataclass
@@ -251,10 +249,6 @@ def load_or_fetch_klines(
         want_lo = fetch_from
         want_hi = end
         bars: list[Bar] | None = None
-        best: Path | None = None
-        for p in KLINE_CACHE.glob(f"{sym}_1m_*.json"):
-            best = p
-            break
         # Prefer exact-ish coverage caches; scan all
         candidates = sorted(KLINE_CACHE.glob(f"{sym}_1m_*.json"))
         for p in candidates:
@@ -409,7 +403,7 @@ def run_pair_lock(
     for coin in coins:
         pattern = f"{coin.lower()}-updown-{window_min}m-*.json"
         for path in POLY_EVENTS.glob(pattern):
-            m = re.search(rf"-(\d+)\.json$", path.name)
+            m = re.search(r"-(\d+)\.json$", path.name)
             if not m:
                 continue
             w_start = int(m.group(1))

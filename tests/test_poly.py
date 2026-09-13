@@ -264,3 +264,22 @@ def test_a_fade_leg_is_not_expired(tmp_path: Path):
     eng = PolyPaper(PolyCfg(), PolyLedger(led), fade=True)
     assert len(eng.inv) == 1
     assert eng.expire() == 0
+
+
+def test_token_map_refuses_mismatched_outcomes_and_ids():
+    """outcomes and clobTokenIds are two independently-parsed fields off the same
+    payload. Zipping them positionally when they disagree does not fail -- it maps
+    an outcome onto the wrong token id, which is the wrong side of the trade."""
+    from stablebot.poly.client import _token_map
+
+    good = {"outcomes": '["Up","Down"]', "clobTokenIds": '["tok-up","tok-down"]'}
+    assert _token_map(good) == {"up": "tok-up", "down": "tok-down"}
+
+    # One id missing: the old code silently paired Up->tok-up and dropped Down.
+    # Returning nothing is correct -- a half-known market must not be traded.
+    short = {"outcomes": '["Up","Down"]', "clobTokenIds": '["tok-up"]'}
+    assert _token_map(short) == {}
+
+    # An extra id is equally suspect: we cannot tell which one is Up.
+    long = {"outcomes": '["Up","Down"]', "clobTokenIds": '["a","b","c"]'}
+    assert _token_map(long) == {}

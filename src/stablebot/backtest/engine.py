@@ -9,7 +9,7 @@ from stablebot.market.depeg import DepegAlert, find_depegs
 from stablebot.market.spreads import SpreadOpportunity, find_opportunities
 from stablebot.paper.engine import simulate_fill
 from stablebot.strategy.stable_spread import is_fillable, opp_key
-from stablebot.backtest.history import Bar, HistoryBook, bars_to_quotes
+from stablebot.backtest.history import HistoryBook, bars_to_quotes
 
 
 @dataclass

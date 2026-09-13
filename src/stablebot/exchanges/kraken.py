@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import httpx
 
 from stablebot.config import AppConfig
-from stablebot.exchanges.base import is_watch_pair, split_concat_symbol
+from stablebot.exchanges.base import ExchangeClient, is_watch_pair, split_concat_symbol
 from stablebot.market.book import Quote
 
 URL = "https://api.kraken.com/0/public/Ticker"
@@ -45,7 +45,7 @@ def _split_kraken_pair(pair: str, assets: set[str]) -> tuple[str, str] | None:
     return None
 
 
-class KrakenClient:
+class KrakenClient(ExchangeClient):
     name = "kraken"
 
     async def fetch_quotes(self, client: httpx.AsyncClient, cfg: AppConfig) -> list[Quote]:

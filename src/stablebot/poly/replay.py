@@ -171,7 +171,7 @@ def winning_side(outcomes: Any, outcome_prices: Any) -> str | None:
     if not outs or len(outs) != len(pxs):
         return None
     winners: list[str] = []
-    for name, px in zip(outs, pxs):
+    for name, px in zip(outs, pxs, strict=True):   # length checked above
         key = name.strip().lower()
         if px >= 1.0 - 1e-9:
             winners.append(key)

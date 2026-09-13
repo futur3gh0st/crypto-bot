@@ -277,7 +277,7 @@ class ReferencePrice:
             return_exceptions=True,
         )
         out: dict[str, float] = {}
-        for venue, res in zip(names, results):
+        for venue, res in zip(names, results, strict=True):   # gather: one per input
             if isinstance(res, BaseException) or res is None:
                 continue
             try:

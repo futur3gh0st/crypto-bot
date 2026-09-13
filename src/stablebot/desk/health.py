@@ -158,7 +158,7 @@ async def probe_all(venues: list[str] | None = None) -> dict[str, VenueHealth]:
     want = venues or list(PROBES)
     results = await asyncio.gather(*(probe_one(v) for v in want), return_exceptions=True)
     out: dict[str, VenueHealth] = {}
-    for venue, res in zip(want, results):
+    for venue, res in zip(want, results, strict=True):   # gather: one result per input
         if isinstance(res, BaseException):
             label = PROBES[venue][0]
             out[venue] = VenueHealth(venue, label, False, "error", str(res)[:100])

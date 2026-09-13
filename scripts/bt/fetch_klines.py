@@ -48,7 +48,7 @@ async def fetch_symbol(c: httpx.AsyncClient, sym: str, start_ms: int, end_ms: in
                 try:
                     r = await c.get(VISION, params={"symbol": sym, "interval": "1m",
                                                     "startTime": cur, "endTime": end_ms, "limit": 1000})
-                except (httpx.HTTPError, OSError) as exc:
+                except (httpx.HTTPError, OSError):
                     r = None
                     await asyncio.sleep(2.0 * (attempt + 1))
                     continue

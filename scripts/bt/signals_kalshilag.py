@@ -7,7 +7,7 @@ closed bar, |z| >= z_entry, then the soonest market with remaining time inside
 """
 from __future__ import annotations
 import json, math, sys
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]

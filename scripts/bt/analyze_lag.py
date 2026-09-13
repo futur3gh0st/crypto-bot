@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Quantify the gap between prices-history and the ask a taker would pay."""
 from __future__ import annotations
-import json, sys
+import json
 from pathlib import Path
 
 P = Path(__file__).resolve().parents[2] / "data" / "bt_cache" / "lag_dense.jsonl"

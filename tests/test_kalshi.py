@@ -14,7 +14,6 @@ from stablebot.cli import build_parser
 from stablebot.config import KalshiCfg
 from stablebot.kalshi.client import (
     KalshiClient,
-    KalshiNotFound,
     KalshiRateLimit,
     ScanRow,
     parse_orderbook,

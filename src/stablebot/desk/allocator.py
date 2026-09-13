@@ -171,7 +171,7 @@ class Allocator:
                 for s in proven:
                     weights[s.name] = proven_pot / len(proven)
             else:
-                for s, r in zip(proven, raw):
+                for s, r in zip(proven, raw, strict=True):   # raw is built from proven
                     weights[s.name] = proven_pot * (r / total)
         if unproven:
             share = (EXPLORE_FRAC if proven else 1.0) / len(unproven)

@@ -11,7 +11,13 @@ from rich.console import Console
 
 from stablebot.desk import render
 from stablebot.desk.health import VenueHealth
-from stablebot.desk.server import ExposureRefused, TOKEN_ENV, parse_request, serve_state
+from stablebot.desk.server import (
+    MAX_REQUEST_BYTES,
+    ExposureRefused,
+    TOKEN_ENV,
+    parse_request,
+    serve_state,
+)
 from stablebot.desk.signal import GateCounter
 from stablebot.desk.state import (
     BookRow,
@@ -147,7 +153,7 @@ def test_binding_off_loopback_without_a_token_is_refused():
     asyncio.run(main())
 
 
-def test_a_token_gates_every_request(monkeypatch):
+def test_a_token_gates_the_state_feed(monkeypatch):
     monkeypatch.setenv(TOKEN_ENV, "s3cret")
 
     async def main():
@@ -155,6 +161,76 @@ def test_a_token_gates_every_request(monkeypatch):
         try:
             assert (await _get(8793))[0].startswith("HTTP/1.1 401")
             assert (await _get(8793, token="s3cret"))[0].startswith("HTTP/1.1 200")
+        finally:
+            srv.close()
+            await srv.wait_closed()
+
+    asyncio.run(main())
+
+
+def test_health_is_reachable_without_a_token(monkeypatch):
+    """The container HEALTHCHECK cannot send a token. Gating /health marked the
+    desk permanently unhealthy and restart-looped it. /health leaks no book data."""
+    monkeypatch.setenv(TOKEN_ENV, "s3cret")
+
+    async def main():
+        srv = await serve_state(lambda: {"equity": 1}, "127.0.0.1", 8794)
+        try:
+            status, body = await _get(8794, "/health")
+            assert status == "HTTP/1.1 200 OK"
+            assert body == '{"ok":true}'
+            # ...while the feed that does carry positions stays shut.
+            assert (await _get(8794, "/state"))[0].startswith("HTTP/1.1 401")
+        finally:
+            srv.close()
+            await srv.wait_closed()
+
+    asyncio.run(main())
+
+
+def test_a_wrong_token_of_equal_length_is_rejected(monkeypatch):
+    """Guards the compare_digest path: same length, so a naive == would still
+    reject, but this pins the behaviour if anyone rewrites the comparison."""
+    monkeypatch.setenv(TOKEN_ENV, "s3cret")
+
+    async def main():
+        srv = await serve_state(lambda: {"ok": 1}, "127.0.0.1", 8795)
+        try:
+            assert (await _get(8795, token="s3crXt"))[0].startswith("HTTP/1.1 401")
+            assert (await _get(8795, token="s3cret"))[0].startswith("HTTP/1.1 200")
+        finally:
+            srv.close()
+            await srv.wait_closed()
+
+    asyncio.run(main())
+
+
+def test_an_oversized_request_is_refused_not_buffered(monkeypatch):
+    """MAX_REQUEST_BYTES was defined but never wired: a 60KB header returned 200.
+
+    The server may answer 400 or drop the connection while we are still sending
+    the oversized head. Both are refusals; the contract is that it is never
+    served, so assert on that rather than on one particular refusal shape.
+    """
+    monkeypatch.delenv(TOKEN_ENV, raising=False)
+
+    async def main():
+        srv = await serve_state(lambda: {"ok": 1}, "127.0.0.1", 8796)
+        try:
+            first = ""
+            try:
+                r, w = await asyncio.open_connection("127.0.0.1", 8796)
+                w.write(b"GET /state HTTP/1.1\r\nX-Pad: " + b"A" * (MAX_REQUEST_BYTES * 4) + b"\r\n\r\n")
+                await w.drain()
+                data = await asyncio.wait_for(r.read(-1), timeout=5)
+                first = data.split(b"\r\n")[0].decode()
+                w.close()
+            except (ConnectionResetError, BrokenPipeError):
+                first = "<connection dropped>"
+            assert "200 OK" not in first, f"oversized request was served: {first!r}"
+
+            # A normal request on the same server still works.
+            assert (await _get(8796, "/state"))[0] == "HTTP/1.1 200 OK"
         finally:
             srv.close()
             await srv.wait_closed()

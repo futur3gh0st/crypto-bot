@@ -6,7 +6,7 @@ prints at t >= signal_ts to price the entry, and outcomePrices for resolution.
 """
 from __future__ import annotations
 
-import asyncio, json, sys, time
+import asyncio, json, time
 from pathlib import Path
 
 import httpx
@@ -86,7 +86,11 @@ async def main():
                         f.write(json.dumps({"slug": x["slug"], "ok": False,
                                             "why": "bad tokens"}) + "\n")
                         continue
-                    tok = {o.strip().lower(): t for o, t in zip(outs, ids)}
+                    if len(outs) != len(ids):
+                        f.write(json.dumps({"slug": x["slug"], "ok": False,
+                                            "why": "outcome/token length mismatch"}) + "\n")
+                        continue
+                    tok = {o.strip().lower(): t for o, t in zip(outs, ids, strict=True)}
                     side_tok = tok.get(x["side"])
                     if not side_tok:
                         f.write(json.dumps({"slug": x["slug"], "ok": False,
@@ -95,7 +99,7 @@ async def main():
                     meta.append((x, mk))
                     tasks.append(hist(side_tok, x["window_start"], x["window_end"]))
                 res = await asyncio.gather(*tasks) if tasks else []
-                for (x, mk), h in zip(meta, res):
+                for (x, mk), h in zip(meta, res, strict=True):
                     f.write(json.dumps({
                         "slug": x["slug"], "ok": True,
                         "outcomes": mk.get("outcomes"),

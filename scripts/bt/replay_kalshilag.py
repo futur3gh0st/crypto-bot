@@ -167,7 +167,7 @@ if __name__ == "__main__":
     n = len(tr); w = sum(1 for t in tr if t["won"])
     pnl = sum(t["pnl"] for t in tr)
     be = sum(t["ask"] for t in tr) / n if n else 0
-    print(f"\nkalshi_lag  (real book, no mid proxy)")
+    print("\nkalshi_lag  (real book, no mid proxy)")
     print(f"  trades={n}  wins={w} ({100*w/n if n else 0:.1f}%)  "
           f"avg ask (breakeven)={100*be:.1f}%")
     print(f"  PnL={pnl:+,.2f}   end equity={eq:,.2f}  (start {start:,.0f})")

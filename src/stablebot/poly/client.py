@@ -43,8 +43,14 @@ def _as_list(raw: Any) -> list[Any]:
 def _token_map(market: dict[str, Any]) -> dict[str, str]:
     outcomes = [str(x).strip() for x in _as_list(market.get("outcomes"))]
     ids = [str(x).strip() for x in _as_list(market.get("clobTokenIds"))]
+    # Two independently-parsed fields off the same API payload. Pairing them
+    # positionally when they disagree in length does not fail, it silently maps
+    # an outcome onto the wrong token id -- i.e. the wrong side of the trade.
+    # poly/replay.py guards the analogous pairing the same way.
+    if len(outcomes) != len(ids):
+        return {}
     out: dict[str, str] = {}
-    for name, tid in zip(outcomes, ids):
+    for name, tid in zip(outcomes, ids, strict=True):
         key = name.lower()
         if key in {"up", "down"} and tid:
             out[key] = tid

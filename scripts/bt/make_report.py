@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Assemble the final backtest report from every stage's output."""
 from __future__ import annotations
-import json, subprocess, sys
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -47,8 +47,8 @@ def main():
     A(f"Starting balance **${START:,.0f}**. Paper only — no live order path was used.\n")
 
     A("## Headline\n")
-    A(f"| Configuration | End balance | P&L |")
-    A(f"|---|---:|---:|")
+    A("| Configuration | End balance | P&L |")
+    A("|---|---:|---:|")
     A(f"| **Autopilot ON**, locks sized to real book depth | ${START+P['on']:,.0f} | **{P['on']:+,.0f} ({100*P['on']/START:+.1f}%)** |")
     A(f"| Autopilot OFF, locks sized to real book depth | ${START+P['off']:,.0f} | {P['off']:+,.0f} ({100*P['off']/START:+.1f}%) |")
     A(f"| Autopilot ON, excluding Poly Lock | ${START+P['on_nolock']:,.0f} | {P['on_nolock']:+,.0f} ({100*P['on_nolock']/START:+.1f}%) |")
@@ -91,7 +91,7 @@ def main():
     A(f"| Spot-Lag (Polymarket) | Jan 1 – Sep 10 | {P['sl_trades']:,} | {P['sl_pnl']:+,.0f} | fill prices modelled, not observed |")
     A(f"| Poly Lock | Jan 1 – Sep 10 | {lock_n:,} | {P['lock_pnl']:+,.0f} | sized to the $2 median depth |")
     A(f"| Kalshi Lag | Jul 3 – Sep 10 | {P['kl_trades']:,} | {P['kl_pnl']:+,.2f} | **real order book** |")
-    A(f"| Kalshi Lock | Jul 3 – Sep 10 | 0 | 0 | structurally impossible |\n")
+    A("| Kalshi Lock | Jul 3 – Sep 10 | 0 | 0 | structurally impossible |\n")
 
     A("## What the allocator did\n")
     A(f"With autopilot on, the shipped `Allocator` benched **Spot-Lag after "
@@ -145,7 +145,7 @@ def main():
       "wins 0.803; at 0.95 it wins 0.885 — 6–10 points short across every bucket.\n")
 
     A("## Sleeve detail\n")
-    A(f"### Kalshi Lag — the one trustworthy result\n")
+    A("### Kalshi Lag — the one trustworthy result\n")
     A(f"Kalshi publishes real per-minute bid/ask, so no proxy is needed and "
       f"\"would this have filled?\" has an honest answer. **{kl['n']:,} trades, "
       f"{100*kl['win']:.1f}% win rate against a {100*kl['be']:.1f}% breakeven, "

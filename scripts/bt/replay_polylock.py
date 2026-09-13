@@ -101,8 +101,8 @@ async def day(c, sem, d: datetime, minutes: int):
 
 
 async def main():
-    start = datetime(2026, 1, 1)
-    span = (datetime(2026, 9, 9) - start).days
+    start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    span = (datetime(2026, 9, 9, tzinfo=timezone.utc) - start).days
     if len(sys.argv) > 1 and sys.argv[1] == "full":
         days = [start + timedelta(days=i) for i in range(span + 1)]
     else:
@@ -119,7 +119,7 @@ async def main():
         for i in range(0, len(days), B):
             batch = days[i:i + B]
             rs = await asyncio.gather(*(day(c, sem, d, 15) for d in batch))
-            for d, r in zip(batch, rs):
+            for d, r in zip(batch, rs, strict=True):
                 for k in tot:
                     tot[k] += r.get(k, 0) if not isinstance(tot[k], list) else 0
                 stream += r.get("stream", [])

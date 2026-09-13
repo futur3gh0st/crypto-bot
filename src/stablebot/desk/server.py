@@ -18,6 +18,7 @@ refused unless STABLEBOT_DESK_TOKEN is set, and then every request must carry
 from __future__ import annotations
 
 import asyncio
+import hmac
 import json
 import os
 from typing import Any, Callable
@@ -59,7 +60,8 @@ def parse_request(raw: bytes) -> tuple[str, str, dict[str, str]]:
 def _authorised(headers: dict[str, str], token: str | None) -> bool:
     if not token:
         return True
-    return headers.get("authorization", "") == f"Bearer {token}"
+    # compare_digest, not ==: a plain compare leaks the token prefix by timing.
+    return hmac.compare_digest(headers.get("authorization", ""), f"Bearer {token}")
 
 
 async def serve_state(
@@ -92,18 +94,23 @@ async def serve_state(
             except ValueError:
                 writer.write(_response("400 Bad Request", b'{"error":"bad request"}'))
                 return
-            if not _authorised(headers, token):
-                writer.write(_response("401 Unauthorized", b'{"error":"bad token"}'))
-                return
             if method not in {"GET", "HEAD"}:
                 writer.write(_response("405 Method Not Allowed", b'{"error":"GET only"}'))
                 return
             route = path.split("?", 1)[0].rstrip("/") or "/"
+            # /health carries no book data and must stay reachable without the
+            # token: the container HEALTHCHECK cannot send one, and gating it
+            # marks the desk permanently unhealthy.
+            if route in {"/", "/health"}:
+                writer.write(_response("200 OK", b'{"ok":true}'))
+                await writer.drain()
+                return
+            if not _authorised(headers, token):
+                writer.write(_response("401 Unauthorized", b'{"error":"bad token"}'))
+                return
             if route == "/state":
                 body = json.dumps(snapshot()).encode()
                 writer.write(_response("200 OK", b"" if method == "HEAD" else body))
-            elif route in {"/", "/health"}:
-                writer.write(_response("200 OK", b'{"ok":true}'))
             else:
                 writer.write(_response("404 Not Found", b'{"error":"no such route"}'))
             await writer.drain()
@@ -112,4 +119,7 @@ async def serve_state(
         finally:
             writer.close()
 
-    return await asyncio.start_server(handle, host, port)
+    # limit= caps the read buffer; readuntil then raises LimitOverrunError,
+    # which the handler already turns into a 400. Without it the constant was
+    # decorative and asyncio's 64KB default applied.
+    return await asyncio.start_server(handle, host, port, limit=MAX_REQUEST_BYTES)

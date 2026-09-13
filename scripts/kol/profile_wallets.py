@@ -11,7 +11,6 @@ Public RPC only. No keys, no orders.
 """
 from __future__ import annotations
 import asyncio, json, time
-from datetime import datetime, timezone
 from pathlib import Path
 
 import httpx

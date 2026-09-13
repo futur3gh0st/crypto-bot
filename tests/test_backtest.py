@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 
 from stablebot.backtest.engine import run_backtest
 from stablebot.backtest.history import default_fixture_path, load_fixture

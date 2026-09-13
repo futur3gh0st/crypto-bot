@@ -11,7 +11,7 @@ from stablebot.exchanges.okx import fetch_current_funding, fetch_funding_history
 from stablebot.market.book import Quote
 from stablebot.market.depeg import deviation_bps
 from stablebot.market.funding import FundingPrint, should_enter, trailing_avg
-from stablebot.strategy.depeg_fade import acute_entry, cheap_enough, consecutive_cheap
+from stablebot.strategy.depeg_fade import acute_entry, consecutive_cheap
 
 
 @dataclass

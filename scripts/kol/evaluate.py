@@ -8,9 +8,8 @@ path. Solana DEX taker cost is charged both ways.
 Run it any time; it reports on whatever has accumulated.
 """
 from __future__ import annotations
-import json, statistics as st, sys
+import json, statistics as st
 from collections import defaultdict
-from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -73,7 +72,7 @@ def main():
     lags = [t["detect_lag_s"] for t in trades if t.get("detect_lag_s") is not None]
     if lags:
         lags.sort()
-        print(f"\nDETECTION LAG (their fill lands -> a follower can see it)")
+        print("\nDETECTION LAG (their fill lands -> a follower can see it)")
         print(f"  median {st.median(lags):.0f}s   p25 {lags[int(.25*len(lags))]:.0f}s"
               f"   p75 {lags[int(.75*len(lags))]:.0f}s   max {lags[-1]:.0f}s")
 
@@ -82,7 +81,7 @@ def main():
     liq = [(t.get("dex") or {}).get("liq_usd") or 0 for t in buys]
     known = sorted(x for x in liq if x > 0)
     unknown = sum(1 for x in liq if x <= 0)
-    print(f"\nPOOL LIQUIDITY at the moment of copy")
+    print("\nPOOL LIQUIDITY at the moment of copy")
     if known:
         thin = sum(1 for x in known if x < MIN_LIQ)
         print(f"  reported for {len(known)} buys: median ${st.median(known):,.0f}   "
@@ -122,7 +121,7 @@ def main():
     by = defaultdict(int)
     for t in trades:
         by[t.get("name") or "?"] += 1
-    print(f"\nmost active of the tracked wallets: " +
+    print("\nmost active of the tracked wallets: " +
           ", ".join(f"{k} ({v})" for k, v in
                     sorted(by.items(), key=lambda kv: -kv[1])[:6]))
     if trades:

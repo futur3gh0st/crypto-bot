@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import httpx
 
 from stablebot.config import AppConfig
-from stablebot.exchanges.base import is_watch_pair, split_concat_symbol
+from stablebot.exchanges.base import ExchangeClient, is_watch_pair, split_concat_symbol
 from stablebot.market.book import Quote
 
 BASES = (
@@ -14,7 +14,7 @@ BASES = (
 )
 
 
-class BinanceClient:
+class BinanceClient(ExchangeClient):
     name = "binance"
 
     async def fetch_quotes(self, client: httpx.AsyncClient, cfg: AppConfig) -> list[Quote]:
