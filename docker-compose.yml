@@ -9,8 +9,9 @@ services:
     volumes:
       - ./data:/app/data
     environment:
-      # Required only if you publish the port off loopback.
-      - STABLEBOT_DESK_TOKEN=${STABLEBOT_DESK_TOKEN:-}
+      # Required: the container binds 0.0.0.0 in its own namespace and
+      # server.py refuses that without a token. Set it in .env.
+      - STABLEBOT_DESK_TOKEN=${STABLEBOT_DESK_TOKEN:?set STABLEBOT_DESK_TOKEN in .env (openssl rand -hex 24)}
     # Only the lock sleeves. Spot-Lag and Kalshi Lag measured flat-to-negative
     # in BACKTEST_JAN_SEP_2026.md; running them here would only add noise to
     # the ledger expectancy.py scores. kalshi_lock cannot fire, so this is
@@ -27,4 +28,7 @@ services:
     volumes:
       - ./data:/app/data
     command: ["python", "scripts/bt/maker_wx_poll.py"]
+    # The image's HEALTHCHECK probes the desk's :8787; the poller serves nothing.
+    healthcheck:
+      disable: true
     stop_grace_period: 10s
