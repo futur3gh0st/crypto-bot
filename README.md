@@ -47,15 +47,25 @@ Optional and not required to run: `X_BEARER_TOKEN` (sentiment, live-only) and
 ### Is the edge real?
 
 P&L alone cannot answer that: a total near $0 over a few hundred trades is
-usually "we cannot tell yet", not "break-even". `scripts/bt/expectancy.py`
-pairs each entry against its outcome and reports the realized interval, the
-edge the model *claimed* versus what it delivered, a calibration table, and how
-many resolved trades are still needed. It refuses to render a verdict below 30
-resolved trades.
+usually "we cannot tell yet", not "break-even". Every ledger here is scored
+with [edgecheck](https://github.com/futur3gh0st/edgecheck), which was built
+from this project's mistakes: costs first, a cluster-robust interval (every
+coin's 15-minute market settles on the same window, so trades in a window are
+one piece of evidence, not seven), the edge the model *claimed* versus what
+it delivered, calibration, drawdown, capacity against the depth the log
+recorded, and one verdict. `scripts/bt/expectancy.py` only knows the ledger
+shapes; edgecheck does the rest.
 
 ```bash
+.venv/bin/pip install -e '.[research]'
 .venv/bin/python scripts/bt/expectancy.py data/kalshi_lag_ledger.jsonl
+.venv/bin/python scripts/bt/expectancy.py data/bt_cache/kalshilag_trades.jsonl --bankroll 1000
 ```
+
+The maker forward test is pre-registered in `scripts/bt/maker_wx_plan.json`
+(hash-sealed by `edgecheck plan`); `maker_wx_report.py` writes one row per
+settled day and `edgecheck check --plan` scores it, refusing a verdict before
+21 days.
 
 ## What it does
 

@@ -61,6 +61,22 @@ def verdict(days: dict[str, float]) -> str:
             f"over {n} days; bar is >= ${GO_USD_PER_DAY:.0f}/day with CI lower bound > 0")
 
 
+def write_days(days: dict[str, float]) -> Path:
+    """One row per settled date for `edgecheck check` against the committed
+    plan (scripts/bt/maker_wx_plan.json). Same primary metric, same 21-day
+    floor, same $10/day bar. edgecheck's interval is 95% t rather than this
+    file's 90% z, so an edgecheck GO implies a protocol GO, not the reverse:
+
+        .venv/bin/edgecheck check data/bt_cache/maker_wx/days.jsonl \\
+            --plan scripts/bt/maker_wx_plan.json --pnl pnl --time date
+    """
+    out = CACHE / "days.jsonl"
+    with out.open("w") as f:
+        for date in sorted(days):
+            f.write(json.dumps({"date": date, "pnl": round(days[date], 4)}) + "\n")
+    return out
+
+
 def main() -> None:
     p = CACHE / "fills.jsonl"
     fills = [json.loads(line) for line in p.open()] if p.exists() else []
@@ -68,7 +84,9 @@ def main() -> None:
     pending = [f for f in fills if f.get("pnl") is None]
     print(f"fills: {len(fills)} rows, {len(settled)} settled, {len(pending)} pending settlement")
     print("\n== PRIMARY: queue tier, Kalshi maker fee charged, no Polymarket rebate")
-    print(verdict(daily(settled, "queue", "pnl")))
+    primary = daily(settled, "queue", "pnl")
+    print(verdict(primary))
+    write_days(primary)
 
     print("\n== Sensitivity (descriptive)")
     print(f"{'tier':>8} {'variant':>12} {'days':>4} {'contracts':>9} {'$/day':>8} {'SE':>6} {'total $':>8}")

@@ -1,0 +1,13 @@
+{
+  "bankroll": null,
+  "cluster": null,
+  "columns": {},
+  "created": "2026-09-15T15:03:07+00:00",
+  "edgecheck_plan": 1,
+  "go_threshold": 10.0,
+  "max_drawdown_frac": 0.5,
+  "min_units": 21,
+  "note": "maker_wx forward test, protocol fixed 2026-09-12: queue tier, Kalshi maker fee charged, no Polymarket rebate; one row per settled date. Protocol CI is 90% z; edgecheck scores at 95% t (stricter).",
+  "sha256": "bafff9c28dbc62d7cada6c599402f0da0a4b87b876c70906a3d49cee8c6b5745",
+  "target": 10.0
+}

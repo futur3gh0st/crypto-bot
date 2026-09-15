@@ -20,6 +20,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.16"]
+# Research scripts under scripts/bt/ score ledgers with edgecheck; the desk itself does not need it.
+research = ["edgecheck>=0.2.0"]
 poly-live = ["py-clob-client-v2"]
 
 [project.scripts]
